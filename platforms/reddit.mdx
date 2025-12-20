@@ -1,0 +1,445 @@
+---
+title: "Reddit"
+description: "Complete guide to fetching Reddit data"
+---
+
+
+Complete guide to fetching Reddit data including subreddit posts and comments.
+
+## Endpoints Overview
+
+| Endpoint | Description | Credits |
+|----------|-------------|---------|
+| `POST /reddit/posts` | Get subreddit posts | 1 + 1/post |
+| `POST /reddit/comments` | Get post comments | 1 + 0.5/comment |
+
+---
+
+## Get Subreddit Posts
+
+Fetch posts from a Reddit subreddit.
+
+### Basic Request
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "python",
+    "limit": 10
+  }'
+```
+
+### With Sorting Options
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "machinelearning",
+    "sort": "top",
+    "period": "week",
+    "limit": 25
+  }'
+```
+
+### All Sort Options
+
+```bash
+# Hot posts
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "python", "sort": "hot", "limit": 20}'
+
+# New posts
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "python", "sort": "new", "limit": 20}'
+
+# Top posts (with time period)
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "python", "sort": "top", "period": "month", "limit": 20}'
+
+# Rising posts
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "python", "sort": "rising", "limit": 20}'
+
+# Controversial posts
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "python", "sort": "controversial", "period": "week", "limit": 20}'
+```
+
+### With Pagination
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "python",
+    "sort": "new",
+    "limit": 25,
+    "cursor": "t3_abc123"
+  }'
+```
+
+### With ML Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "python",
+    "sort": "hot",
+    "limit": 20,
+    "enrich": ["sentiment", "topics", "intent", "keywords"],
+    "categories": {
+      "topic": ["question", "tutorial", "showcase", "discussion", "help"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `name` | string | Yes | - | Subreddit name (without r/) |
+| `sort` | string | No | new | Sort: new, hot, top, controversial, rising |
+| `period` | string | No | day | Time period: day, week, month, year, all |
+| `limit` | integer | No | 10 | Posts to fetch (1-100) |
+| `cursor` | string | No | - | Pagination cursor |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+| `llm_provider` | string | No | gemini-2.0-flash | LLM for enrichment |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "id": "t3_abc123",
+        "title": "How do I handle async operations in Python?",
+        "post_text": "I'm trying to understand asyncio...",
+        "author": "python_learner",
+        "url": "https://www.reddit.com/r/python/comments/abc123/",
+        "permalink": "/r/python/comments/abc123/how_do_i_handle_async/",
+        "created_utc": 1705315800,
+        "score": 156,
+        "upvote_ratio": 0.94,
+        "num_comments": 42,
+        "enrichment": {
+          "sentiment": "neutral",
+          "topics": ["question", "help"],
+          "intent": "question",
+          "keywords": ["async", "asyncio", "python", "operations"]
+        }
+      }
+    ],
+    "cursor": "t3_def456",
+    "has_more": true
+  },
+  "metadata": {
+    "credits_used": 41,
+    "processing_time": 1.234,
+    "enrichments": ["sentiment", "topics", "intent", "keywords"]
+  }
+}
+```
+
+---
+
+## Get Post Comments
+
+Fetch comments from a Reddit post. Supports both permalink paths and full URLs.
+
+### Using Permalink Path
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "permalink": "/r/Python/comments/1pilhi2/metacode_the_new_standard/",
+    "limit": 50
+  }'
+```
+
+### Using Full URL
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "permalink": "https://www.reddit.com/r/Python/comments/1pilhi2/metacode/",
+    "limit": 100
+  }'
+```
+
+### With ML Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/reddit/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "permalink": "/r/Python/comments/1pilhi2/metacode_the_new_standard/",
+    "limit": 100,
+    "enrich": ["sentiment", "intent"],
+    "categories": {
+      "intent": ["support", "criticism", "question", "suggestion"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `permalink` | string | Yes | - | Post permalink or full URL |
+| `limit` | integer | No | 50 | Comments to fetch (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "comments": [
+      {
+        "id": "klm789",
+        "author": "helpful_dev",
+        "body": "Great question! You should check out the asyncio documentation first, then look at some practical examples.",
+        "created_utc": 1705320000,
+        "score": 25,
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.82,
+          "intent": "support"
+        }
+      },
+      {
+        "id": "nop012",
+        "author": "python_expert",
+        "body": "I disagree with the approach mentioned. Here's why...",
+        "created_utc": 1705321000,
+        "score": 15,
+        "enrichment": {
+          "sentiment": "neutral",
+          "sentiment_score": 0.45,
+          "intent": "criticism"
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 51,
+    "enrichments": ["sentiment", "intent"]
+  }
+}
+```
+
+---
+
+## Python Examples
+
+### Monitor Subreddit Activity
+
+```python
+import requests
+from datetime import datetime
+
+def monitor_subreddit(subreddit, hours=24):
+    all_posts = []
+    cursor = None
+
+    while True:
+        payload = {
+            "name": subreddit,
+            "sort": "new",
+            "limit": 100,
+            "enrich": ["sentiment", "topics"]
+        }
+        if cursor:
+            payload["cursor"] = cursor
+
+        response = requests.post(
+            "https://api.yourservice.com/reddit/posts",
+            headers={"X-API-Key": "your-api-key"},
+            json=payload
+        )
+
+        data = response.json()
+        posts = data["data"]["posts"]
+
+        # Filter by time
+        cutoff = datetime.utcnow().timestamp() - (hours * 3600)
+        recent_posts = [p for p in posts if p["created_utc"] > cutoff]
+
+        all_posts.extend(recent_posts)
+
+        # Stop if we've gone past the time window
+        if len(recent_posts) < len(posts):
+            break
+
+        if not data["data"]["has_more"]:
+            break
+
+        cursor = data["data"]["cursor"]
+
+    return all_posts
+```
+
+### Analyze Discussion Sentiment
+
+```python
+import requests
+from collections import Counter
+
+def analyze_discussion(permalink, limit=200):
+    response = requests.post(
+        "https://api.yourservice.com/reddit/comments",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "permalink": permalink,
+            "limit": limit,
+            "enrich": ["sentiment", "intent"]
+        }
+    )
+
+    data = response.json()
+    comments = data["data"]["comments"]
+
+    # Aggregate results
+    sentiments = Counter(
+        c.get("enrichment", {}).get("sentiment", "unknown")
+        for c in comments
+    )
+
+    intents = Counter(
+        c.get("enrichment", {}).get("intent", "unknown")
+        for c in comments
+    )
+
+    # Calculate average score by sentiment
+    sentiment_scores = {}
+    for sentiment in ["positive", "negative", "neutral"]:
+        matching = [c for c in comments
+                   if c.get("enrichment", {}).get("sentiment") == sentiment]
+        if matching:
+            sentiment_scores[sentiment] = sum(c["score"] for c in matching) / len(matching)
+
+    return {
+        "total_comments": len(comments),
+        "sentiment_distribution": dict(sentiments),
+        "intent_distribution": dict(intents),
+        "avg_score_by_sentiment": sentiment_scores
+    }
+```
+
+### Compare Subreddits
+
+```python
+import requests
+from collections import Counter
+
+def compare_subreddits(subreddits, posts_per_sub=50):
+    results = {}
+
+    for subreddit in subreddits:
+        response = requests.post(
+            "https://api.yourservice.com/reddit/posts",
+            headers={"X-API-Key": "your-api-key"},
+            json={
+                "name": subreddit,
+                "sort": "hot",
+                "limit": posts_per_sub,
+                "enrich": ["sentiment", "topics"]
+            }
+        )
+
+        data = response.json()
+        posts = data["data"]["posts"]
+
+        # Analyze
+        sentiments = Counter(
+            p.get("enrichment", {}).get("sentiment", "unknown")
+            for p in posts
+        )
+
+        all_topics = []
+        for post in posts:
+            topics = post.get("enrichment", {}).get("topics", [])
+            all_topics.extend(topics)
+
+        results[subreddit] = {
+            "post_count": len(posts),
+            "avg_score": sum(p["score"] for p in posts) / len(posts) if posts else 0,
+            "avg_comments": sum(p["num_comments"] for p in posts) / len(posts) if posts else 0,
+            "sentiment": dict(sentiments),
+            "top_topics": Counter(all_topics).most_common(5)
+        }
+
+    return results
+
+# Example usage
+comparison = compare_subreddits(["python", "javascript", "golang"])
+```
+
+### Track Trending Topics
+
+```python
+import requests
+from collections import Counter
+from datetime import datetime
+
+def track_trending_topics(subreddit, days=7):
+    response = requests.post(
+        "https://api.yourservice.com/reddit/posts",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "name": subreddit,
+            "sort": "top",
+            "period": "week",
+            "limit": 100,
+            "enrich": ["topics", "keywords"]
+        }
+    )
+
+    data = response.json()
+    posts = data["data"]["posts"]
+
+    # Extract all topics and keywords
+    all_topics = []
+    all_keywords = []
+
+    for post in posts:
+        enrichment = post.get("enrichment", {})
+        all_topics.extend(enrichment.get("topics", []))
+        all_keywords.extend(enrichment.get("keywords", []))
+
+    return {
+        "subreddit": subreddit,
+        "period": f"last {days} days",
+        "posts_analyzed": len(posts),
+        "trending_topics": Counter(all_topics).most_common(10),
+        "trending_keywords": Counter(all_keywords).most_common(20),
+        "credits_used": data["metadata"]["credits_used"]
+    }
+```

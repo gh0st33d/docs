@@ -1,0 +1,120 @@
+---
+title: 'Getting Started'
+description: 'Make your first API call in minutes'
+---
+
+Welcome to the Clay Integration API! This guide will help you make your first API call in minutes.
+
+## Prerequisites
+
+- An API key (contact your administrator)
+- HTTP client (curl, Python requests, JavaScript fetch, etc.)
+
+## Base URL
+
+All API requests should be made to:
+
+```
+https://api.yourservice.com
+```
+
+## Authentication
+
+All requests require an API key passed in the `X-API-Key` header:
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "charlidamelio", "limit": 10}'
+```
+
+## Your First API Call
+
+Let's fetch posts from a TikTok user:
+
+### Request
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "charlidamelio",
+    "limit": 5
+  }'
+```
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "id": "7312345678901234567",
+        "caption": "New dance tutorial! #fyp #dance",
+        "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+        "stats": {
+          "views": 5200000,
+          "likes": 850000,
+          "comments": 12500,
+          "shares": 45000
+        }
+      }
+    ],
+    "cursor": "1705315800000",
+    "has_more": true
+  },
+  "metadata": {
+    "credits_used": 5,
+    "processing_time": 0.523,
+    "enrichments": []
+  }
+}
+```
+
+## Adding ML Enrichment
+
+Enhance your data with sentiment analysis, topic extraction, and more:
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "charlidamelio",
+    "limit": 5,
+    "enrich": ["sentiment", "topics", "intent", "keywords"]
+  }'
+```
+
+Each post will now include an `enrichment` object with analysis results.
+
+## Available Platforms
+
+| Platform | Endpoints |
+|----------|-----------|
+| TikTok | `/tiktok/posts`, `/tiktok/comments`, `/tiktok/bulk/posts`, `/tiktok/hashtag/posts` |
+| Instagram | `/instagram/posts`, `/instagram/comments`, `/instagram/hashtag/posts` |
+| YouTube | `/youtube/search`, `/youtube/comments`, `/youtube/hashtag/search`, `/youtube/channel/videos`, `/youtube/channel/shorts` |
+| Reddit | `/reddit/posts`, `/reddit/comments` |
+| ML | `/ml/analyze` |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn about API key management
+  </Card>
+  <Card title="Credits & Pricing" icon="coins" href="/credits">
+    Understand the credit system
+  </Card>
+  <Card title="ML Enrichment" icon="brain" href="/ml-enrichment">
+    Available enrichment options
+  </Card>
+  <Card title="Platform Guides" icon="globe" href="/platforms/tiktok">
+    Detailed guides for each platform
+  </Card>
+</CardGroup>

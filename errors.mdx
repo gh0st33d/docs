@@ -1,0 +1,201 @@
+---
+title: 'Error Handling'
+description: 'Handle API errors gracefully'
+---
+
+All API errors follow a consistent format to help you handle them gracefully.
+
+## Error Response Format
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "Human-readable error message"
+  },
+  "metadata": {
+    "credits_used": 0,
+    "processing_time": 0.012
+  }
+}
+```
+
+## Error Codes Reference
+
+### Authentication Errors
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `UNAUTHORIZED` | 401 | Missing or invalid API key |
+| `PAYMENT_REQUIRED` | 402 | Insufficient credits |
+
+### Request Errors
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `BAD_REQUEST` | 400 | Invalid request parameters |
+| `NOT_FOUND` | 404 | Resource not found |
+| `RATE_LIMITED` | 429 | Too many requests |
+
+### Server Errors
+
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `SERVICE_UNAVAILABLE` | 503 | Temporary service outage (circuit breaker) |
+| `EXTERNAL_API_ERROR` | 502 | External platform API error |
+| `INTERNAL_SERVER_ERROR` | 500 | Unexpected server error |
+
+## Handling Common Errors
+
+<AccordionGroup>
+  <Accordion title="Invalid API Key">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "UNAUTHORIZED",
+        "message": "Invalid API key"
+      }
+    }
+    ```
+    **Solution:** Check that your API key is correct and hasn't expired.
+  </Accordion>
+
+  <Accordion title="Limit Exceeds Maximum">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "BAD_REQUEST",
+        "message": "limit exceeds max"
+      }
+    }
+    ```
+    **Solution:** Reduce the `limit` parameter. Maximum varies by endpoint (typically 100 for posts, 500 for comments).
+  </Accordion>
+
+  <Accordion title="Service Temporarily Unavailable">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "SERVICE_UNAVAILABLE",
+        "message": "Service temporarily unavailable"
+      }
+    }
+    ```
+    **Solution:** The circuit breaker is open due to upstream issues. Retry after a few seconds with exponential backoff.
+  </Accordion>
+
+  <Accordion title="External API Error">
+    ```json
+    {
+      "success": false,
+      "error": {
+        "code": "EXTERNAL_API_ERROR",
+        "message": "External API returned 404: Post not found"
+      }
+    }
+    ```
+    **Solution:** The external platform returned an error. Check that the resource exists and the URL/ID is correct.
+  </Accordion>
+</AccordionGroup>
+
+## Error Handling Examples
+
+<CodeGroup>
+
+```python Python
+import requests
+from time import sleep
+
+def fetch_with_retry(url, payload, max_retries=3):
+    headers = {
+        "X-API-Key": "your-api-key",
+        "Content-Type": "application/json"
+    }
+
+    for attempt in range(max_retries):
+        response = requests.post(url, headers=headers, json=payload)
+        data = response.json()
+
+        if data["success"]:
+            return data
+
+        error_code = data["error"]["code"]
+
+        # Don't retry client errors
+        if error_code in ["UNAUTHORIZED", "BAD_REQUEST", "NOT_FOUND"]:
+            raise Exception(f"Client error: {data['error']['message']}")
+
+        # Retry server errors with backoff
+        if error_code in ["SERVICE_UNAVAILABLE", "RATE_LIMITED"]:
+            wait_time = 2 ** attempt  # 1, 2, 4 seconds
+            print(f"Retrying in {wait_time}s...")
+            sleep(wait_time)
+            continue
+
+        raise Exception(f"API error: {data['error']['message']}")
+
+    raise Exception("Max retries exceeded")
+```
+
+```javascript JavaScript
+async function fetchWithRetry(url, payload, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "X-API-Key": "your-api-key",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      return data;
+    }
+
+    const errorCode = data.error.code;
+
+    // Don't retry client errors
+    if (["UNAUTHORIZED", "BAD_REQUEST", "NOT_FOUND"].includes(errorCode)) {
+      throw new Error(`Client error: ${data.error.message}`);
+    }
+
+    // Retry server errors with backoff
+    if (["SERVICE_UNAVAILABLE", "RATE_LIMITED"].includes(errorCode)) {
+      const waitTime = Math.pow(2, attempt) * 1000;
+      console.log(`Retrying in ${waitTime/1000}s...`);
+      await new Promise(r => setTimeout(r, waitTime));
+      continue;
+    }
+
+    throw new Error(`API error: ${data.error.message}`);
+  }
+
+  throw new Error("Max retries exceeded");
+}
+```
+
+</CodeGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Always check success" icon="check">
+    Don't assume the request succeeded
+  </Card>
+  <Card title="Log error codes" icon="list">
+    Track which errors occur most frequently
+  </Card>
+  <Card title="Implement retry logic" icon="rotate">
+    For transient errors like SERVICE_UNAVAILABLE
+  </Card>
+  <Card title="Use exponential backoff" icon="clock">
+    Start with 1s, then 2s, 4s, etc.
+  </Card>
+</CardGroup>

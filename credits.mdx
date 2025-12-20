@@ -1,0 +1,112 @@
+---
+title: 'Credits & Pricing'
+description: 'Understand how the credit-based pricing system works'
+---
+
+The API uses a credit-based system. Each API call consumes credits based on the endpoint and options used.
+
+## How Credits Work
+
+- Each API call has a base credit cost
+- Fetching more data costs more credits
+- ML enrichment adds additional credits per item analyzed
+
+## Credit Costs by Endpoint
+
+### TikTok
+
+| Endpoint | Base Cost | Per Item | With Enrichment |
+|----------|-----------|----------|-----------------|
+| `/tiktok/posts` | 1 credit | +1 per post | +2 per enriched post |
+| `/tiktok/comments` | 1 credit | +0.5 per comment | +1.5 per enriched comment |
+| `/tiktok/bulk/posts` | 2 credits | +1 per post | +2 per enriched post |
+| `/tiktok/hashtag/posts` | 2 credits | +1 per post | +2 per enriched post |
+
+### Instagram
+
+| Endpoint | Base Cost | Per Item | With Enrichment |
+|----------|-----------|----------|-----------------|
+| `/instagram/posts` | 1 credit | +1 per post | +2 per enriched post |
+| `/instagram/comments` | 1 credit | +0.5 per comment | +1.5 per enriched comment |
+| `/instagram/hashtag/posts` | 2 credits | +1 per post | +2 per enriched post |
+
+### YouTube
+
+| Endpoint | Base Cost | Per Item | With Enrichment |
+|----------|-----------|----------|-----------------|
+| `/youtube/search` | 2 credits | +1 per video | +2 per enriched video |
+| `/youtube/comments` | 1 credit | +0.5 per comment | +1.5 per enriched comment |
+| `/youtube/hashtag/search` | 2 credits | +1 per video | +2 per enriched video |
+| `/youtube/channel/videos` | 2 credits | +1 per video | +2 per enriched video |
+| `/youtube/channel/shorts` | 2 credits | +1 per short | +2 per enriched short |
+
+### Reddit
+
+| Endpoint | Base Cost | Per Item | With Enrichment |
+|----------|-----------|----------|-----------------|
+| `/reddit/posts` | 1 credit | +1 per post | +2 per enriched post |
+| `/reddit/comments` | 1 credit | +0.5 per comment | +1.5 per enriched comment |
+
+### ML Analyze
+
+| Analysis Type | Cost Per Text |
+|---------------|---------------|
+| `sentiment` | 0.5 credits |
+| `topics` | 1 credit |
+| `intent` | 1 credit |
+| `keywords` | 0.5 credits |
+
+## Example Credit Calculations
+
+<AccordionGroup>
+  <Accordion title="10 TikTok posts without enrichment">
+    - Base: 1 credit
+    - Posts: 10 × 1 = 10 credits
+    - **Total: 11 credits**
+  </Accordion>
+  <Accordion title="10 TikTok posts with sentiment enrichment">
+    - Base: 1 credit
+    - Posts: 10 × 1 = 10 credits
+    - Enrichment: 10 × 2 = 20 credits
+    - **Total: 31 credits**
+  </Accordion>
+  <Accordion title="ML Analyze with 5 texts and all analyses">
+    - Sentiment: 5 × 0.5 = 2.5 credits
+    - Topics: 5 × 1 = 5 credits
+    - Intent: 5 × 1 = 5 credits
+    - Keywords: 5 × 0.5 = 2.5 credits
+    - **Total: 15 credits**
+  </Accordion>
+</AccordionGroup>
+
+## Viewing Credit Usage
+
+Every API response includes credit information in the metadata:
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "metadata": {
+    "credits_used": 31,
+    "processing_time": 0.856
+  }
+}
+```
+
+## Tips for Optimizing Credit Usage
+
+<CardGroup cols={2}>
+  <Card title="Only request what you need" icon="filter">
+    Use the `limit` parameter wisely
+  </Card>
+  <Card title="Batch requests" icon="layer-group">
+    Use bulk endpoints when fetching from multiple users
+  </Card>
+  <Card title="Selective enrichment" icon="check">
+    Only enable enrichments you actually need
+  </Card>
+  <Card title="Cache responses" icon="database">
+    Store data locally to avoid duplicate requests
+  </Card>
+</CardGroup>

@@ -1,0 +1,391 @@
+---
+title: "TikTok"
+description: "Complete guide to fetching TikTok data"
+---
+
+
+Complete guide to fetching TikTok data including user posts, comments, and hashtag searches.
+
+## Endpoints Overview
+
+| Endpoint | Description | Credits |
+|----------|-------------|---------|
+| `POST /tiktok/posts` | Get user's posts | 1 + 1/post |
+| `POST /tiktok/comments` | Get post comments | 1 + 0.5/comment |
+| `POST /tiktok/bulk/posts` | Get posts from multiple users | 2 + 1/post |
+| `POST /tiktok/hashtag/posts` | Search posts by hashtag | 2 + 1/post |
+
+---
+
+## Get User Posts
+
+Fetch posts from a TikTok user's profile.
+
+### Basic Request
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "charlidamelio",
+    "limit": 10
+  }'
+```
+
+### With Pagination
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "charlidamelio",
+    "limit": 10,
+    "cursor": "1705315800000"
+  }'
+```
+
+### With ML Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "charlidamelio",
+    "limit": 10,
+    "enrich": ["sentiment", "topics", "intent", "keywords"],
+    "categories": {
+      "topic": ["dance", "lifestyle", "comedy", "tutorial"]
+    },
+    "llm_provider": "gemini-2.0-flash"
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `username` | string | Yes | - | TikTok username (without @) |
+| `limit` | integer | No | 10 | Posts to fetch (1-100) |
+| `cursor` | string | No | - | Pagination cursor |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+| `llm_provider` | string | No | gemini-2.0-flash | LLM for enrichment |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "id": "7312345678901234567",
+        "caption": "New dance tutorial! #fyp #dance #tutorial",
+        "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+        "timestamp": "2024-01-15T10:30:00Z",
+        "stats": {
+          "views": 5200000,
+          "likes": 850000,
+          "comments": 12500,
+          "shares": 45000
+        },
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.85,
+          "topics": ["dance", "tutorial"],
+          "intent": "engagement",
+          "keywords": ["dance", "tutorial", "fyp", "trending"]
+        }
+      }
+    ],
+    "cursor": "1705315800000",
+    "has_more": true
+  },
+  "metadata": {
+    "credits_used": 31,
+    "processing_time": 1.234,
+    "enrichments": ["sentiment", "topics", "intent", "keywords"]
+  }
+}
+```
+
+---
+
+## Get Post Comments
+
+Fetch comments from one or more TikTok posts.
+
+### Single Post
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["https://www.tiktok.com/@charlidamelio/video/7312345678901234567"],
+    "limit_per_post": 50
+  }'
+```
+
+### Multiple Posts
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": [
+      "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+      "https://www.tiktok.com/@therock/video/7298765432109876543"
+    ],
+    "limit_per_post": 25,
+    "enrich": ["sentiment"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `post_urls` | array | Yes | - | List of TikTok post URLs |
+| `limit_per_post` | integer | No | 50 | Comments per post (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "comments": [
+      {
+        "id": "7312345678901234568",
+        "post_url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+        "text": "This is amazing! You're so talented!",
+        "user": "@dancefan123",
+        "timestamp": "2024-01-15T11:00:00Z",
+        "likes": 1500,
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.95
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 26,
+    "enrichments": ["sentiment"]
+  }
+}
+```
+
+---
+
+## Bulk Get User Posts
+
+Fetch posts from multiple TikTok users in one request.
+
+### Request
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/bulk/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "usernames": ["charlidamelio", "therock", "khaby.lame"],
+    "limit_per_user": 5,
+    "enrich": ["sentiment", "topics"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `usernames` | array | Yes | - | List of usernames |
+| `limit_per_user` | integer | No | 10 | Posts per user (1-100) |
+| `enrich` | array | No | - | ML enrichments |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "users": [
+      {
+        "username": "charlidamelio",
+        "posts": [...]
+      },
+      {
+        "username": "therock",
+        "posts": [...]
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 47,
+    "enrichments": ["sentiment", "topics"]
+  }
+}
+```
+
+---
+
+## Search Hashtag Posts
+
+Search TikTok posts by hashtags.
+
+### Single Hashtag
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/hashtag/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["fyp"],
+    "days": 7,
+    "max_posts_per_hashtag": 100
+  }'
+```
+
+### Multiple Hashtags with Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/tiktok/hashtag/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["fitness", "workout", "gym"],
+    "days": 14,
+    "max_posts_per_hashtag": 50,
+    "enrich": ["sentiment", "intent", "keywords", "topics"],
+    "categories": {
+      "topic": ["exercise", "nutrition", "motivation", "equipment"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `hashtags` | array | Yes | - | Hashtags to search (1-10) |
+| `days` | integer | No | 7 | Look back period (1-30) |
+| `max_posts_per_hashtag` | integer | No | 100 | Max posts per tag (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "post_id": "7312345678901234567",
+        "post_text": "Morning workout routine #fitness #gym",
+        "post_time": "1705315800",
+        "profile_id": "123456789",
+        "profile_name": "fitnessguru",
+        "reaction_count": 15000,
+        "share_count": 2500,
+        "play_count": 500000,
+        "comment_count": 450,
+        "source_name": "fitness",
+        "post_url": "www.tiktok.com/@123456789/video/7312345678901234567",
+        "enrichment": {
+          "sentiment": "positive",
+          "topics": ["exercise", "motivation"],
+          "keywords": ["workout", "morning", "routine", "fitness"]
+        }
+      }
+    ],
+    "hashtags": ["fitness", "workout", "gym"],
+    "days": 14,
+    "total_posts": 150
+  },
+  "metadata": {
+    "credits_used": 302,
+    "enrichments": ["sentiment", "intent", "keywords", "topics"]
+  }
+}
+```
+
+---
+
+## Python Examples
+
+### Fetch All Posts with Pagination
+
+```python
+import requests
+
+def fetch_all_tiktok_posts(username, max_posts=500):
+    all_posts = []
+    cursor = None
+
+    while len(all_posts) < max_posts:
+        payload = {
+            "username": username,
+            "limit": min(100, max_posts - len(all_posts))
+        }
+        if cursor:
+            payload["cursor"] = cursor
+
+        response = requests.post(
+            "https://api.yourservice.com/tiktok/posts",
+            headers={"X-API-Key": "your-api-key"},
+            json=payload
+        )
+        data = response.json()
+
+        if not data["success"]:
+            break
+
+        all_posts.extend(data["data"]["posts"])
+
+        if not data["data"]["has_more"]:
+            break
+
+        cursor = data["data"]["cursor"]
+
+    return all_posts
+```
+
+### Analyze Trending Hashtags
+
+```python
+import requests
+
+def analyze_trending_hashtags(hashtags, days=7):
+    response = requests.post(
+        "https://api.yourservice.com/tiktok/hashtag/posts",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "hashtags": hashtags,
+            "days": days,
+            "max_posts_per_hashtag": 100,
+            "enrich": ["sentiment", "topics"]
+        }
+    )
+
+    data = response.json()
+    posts = data["data"]["posts"]
+
+    # Aggregate sentiment
+    sentiments = {"positive": 0, "negative": 0, "neutral": 0}
+    for post in posts:
+        sentiment = post.get("enrichment", {}).get("sentiment", "neutral")
+        sentiments[sentiment] += 1
+
+    return {
+        "total_posts": len(posts),
+        "sentiment_breakdown": sentiments,
+        "credits_used": data["metadata"]["credits_used"]
+    }
+```

@@ -1,0 +1,436 @@
+---
+title: "YouTube"
+description: "Complete guide to fetching YouTube data"
+---
+
+
+Complete guide to fetching YouTube data including video search, comments, and channel content.
+
+## Endpoints Overview
+
+| Endpoint | Description | Credits |
+|----------|-------------|---------|
+| `POST /youtube/search` | Search videos by keywords | 2 + 1/video |
+| `POST /youtube/hashtag/search` | Search videos by hashtags | 2 + 1/video |
+| `POST /youtube/comments` | Get video comments | 1 + 0.5/comment |
+| `POST /youtube/channel/videos` | Get channel videos | 2 + 1/video |
+| `POST /youtube/channel/shorts` | Get channel Shorts | 2 + 1/short |
+
+---
+
+## Search Videos by Keywords
+
+Search YouTube for videos matching keywords.
+
+### Basic Search
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/search" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keywords": ["python tutorial"],
+    "max_posts_per_keyword": 50
+  }'
+```
+
+### Multiple Keywords with Filters
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/search" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keywords": ["python", "javascript", "react"],
+    "max_posts_per_keyword": 30,
+    "period": "week",
+    "sorting": "viewCount"
+  }'
+```
+
+### With Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/search" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "keywords": ["machine learning"],
+    "max_posts_per_keyword": 50,
+    "period": "month",
+    "sorting": "relevance",
+    "depth": 30,
+    "enrich": ["sentiment", "topics", "keywords"],
+    "categories": {
+      "topic": ["tutorial", "news", "review", "project"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `keywords` | array | Yes | - | Keywords to search (1-10) |
+| `max_posts_per_keyword` | integer | No | 100 | Max videos per keyword (1-500) |
+| `depth` | integer | No | 30 | API pagination depth (1-50) |
+| `period` | string | No | today | Time filter: today, week, month, all |
+| `sorting` | string | No | relevance | Sort: relevance, date, viewCount, rating |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "videos": [
+      {
+        "video_id": "dQw4w9WgXcQ",
+        "title": "Python Tutorial for Beginners",
+        "description": "Learn Python programming from scratch...",
+        "channel_id": "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+        "channel_title": "TechChannel",
+        "published_at": "2024-01-15T10:00:00Z",
+        "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
+        "stats": {
+          "views": 1500000,
+          "likes": 45000,
+          "comments": 2300
+        },
+        "source_keyword": "python tutorial",
+        "enrichment": {
+          "sentiment": "positive",
+          "topics": ["tutorial"],
+          "keywords": ["python", "programming", "beginners", "learn"]
+        }
+      }
+    ],
+    "keywords": ["python tutorial"],
+    "total_videos": 50
+  },
+  "metadata": {
+    "credits_used": 152,
+    "enrichments": ["sentiment", "topics", "keywords"]
+  }
+}
+```
+
+---
+
+## Search by Hashtags
+
+Search YouTube videos by hashtags.
+
+### Basic Hashtag Search
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/hashtag/search" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["python"],
+    "depth": 5
+  }'
+```
+
+### Shorts Only
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/hashtag/search" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["coding", "programming"],
+    "depth": 10,
+    "only_shorts": true,
+    "enrich": ["sentiment", "topics"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `hashtags` | array | Yes | - | Hashtags to search (1-10) |
+| `depth` | integer | No | 1 | Pagination depth (1-50) |
+| `only_shorts` | boolean | No | false | Filter to Shorts only |
+| `enrich` | array | No | - | ML enrichments |
+
+---
+
+## Get Video Comments
+
+Fetch comments from YouTube videos. Supports multiple URL formats.
+
+### Using Full URL
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
+    "limit_per_post": 50
+  }'
+```
+
+### Using youtu.be Short URL
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["https://youtu.be/jNQXAC9IVRw"],
+    "limit_per_post": 50
+  }'
+```
+
+### Using Video ID Only
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["dQw4w9WgXcQ"],
+    "limit_per_post": 50
+  }'
+```
+
+### Mixed Formats with Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": [
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "https://youtu.be/jNQXAC9IVRw",
+      "ABC123videoid"
+    ],
+    "limit_per_post": 25,
+    "enrich": ["sentiment", "intent"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `post_urls` | array | Yes | - | Video URLs or IDs |
+| `limit_per_post` | integer | No | 50 | Comments per video (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "comments": [
+      {
+        "id": "UgzABC123",
+        "video_id": "dQw4w9WgXcQ",
+        "text": "This tutorial saved my project! Thank you!",
+        "author": "DevUser123",
+        "timestamp": "2024-01-15T12:00:00Z",
+        "likes": 150,
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.94,
+          "intent": "praise"
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 38,
+    "enrichments": ["sentiment", "intent"]
+  }
+}
+```
+
+---
+
+## Get Channel Videos
+
+Fetch videos from YouTube channels using browse IDs.
+
+### Single Channel
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/channel/videos" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "browse_ids": ["UC_x5XG1OV2P6uZZ5FSM9Ttw"],
+    "depth": 10
+  }'
+```
+
+### Multiple Channels with Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/channel/videos" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "browse_ids": ["UC_x5XG1OV2P6uZZ5FSM9Ttw", "UCBJycsmduvYEL83R_U4JriQ"],
+    "depth": 25,
+    "enrich": ["sentiment", "topics"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `browse_ids` | array | Yes | - | Channel browse IDs (1-10) |
+| `depth` | integer | No | 10 | Pagination depth (1-50) |
+| `enrich` | array | No | - | ML enrichments |
+
+---
+
+## Get Channel Shorts
+
+Fetch YouTube Shorts from channels.
+
+### Request
+
+```bash
+curl -X POST "https://api.yourservice.com/youtube/channel/shorts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "browse_ids": ["UC_x5XG1OV2P6uZZ5FSM9Ttw"],
+    "enrich": ["sentiment", "topics"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `browse_ids` | array | Yes | - | Channel browse IDs (1-10) |
+| `enrich` | array | No | - | ML enrichments |
+
+---
+
+## Python Examples
+
+### Search and Analyze Videos
+
+```python
+import requests
+from collections import Counter
+
+def search_and_analyze(keyword, max_videos=100):
+    response = requests.post(
+        "https://api.yourservice.com/youtube/search",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "keywords": [keyword],
+            "max_posts_per_keyword": max_videos,
+            "period": "month",
+            "sorting": "viewCount",
+            "enrich": ["sentiment", "topics"]
+        }
+    )
+
+    data = response.json()
+    videos = data["data"]["videos"]
+
+    # Aggregate sentiment
+    sentiments = Counter(
+        v.get("enrichment", {}).get("sentiment", "unknown")
+        for v in videos
+    )
+
+    # Aggregate topics
+    all_topics = []
+    for video in videos:
+        topics = video.get("enrichment", {}).get("topics", [])
+        all_topics.extend(topics)
+    topic_counts = Counter(all_topics)
+
+    return {
+        "total_videos": len(videos),
+        "total_views": sum(v.get("stats", {}).get("views", 0) for v in videos),
+        "sentiment_breakdown": dict(sentiments),
+        "top_topics": topic_counts.most_common(10)
+    }
+```
+
+### Monitor Channel Content
+
+```python
+import requests
+
+def monitor_channel(browse_id, include_shorts=True):
+    results = {"videos": [], "shorts": []}
+
+    # Fetch regular videos
+    response = requests.post(
+        "https://api.yourservice.com/youtube/channel/videos",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "browse_ids": [browse_id],
+            "depth": 25,
+            "enrich": ["sentiment", "topics"]
+        }
+    )
+    results["videos"] = response.json()["data"]["videos"]
+
+    # Optionally fetch Shorts
+    if include_shorts:
+        response = requests.post(
+            "https://api.yourservice.com/youtube/channel/shorts",
+            headers={"X-API-Key": "your-api-key"},
+            json={
+                "browse_ids": [browse_id],
+                "enrich": ["sentiment", "topics"]
+            }
+        )
+        results["shorts"] = response.json()["data"].get("shorts", [])
+
+    return results
+```
+
+### Analyze Comment Sentiment
+
+```python
+import requests
+
+def analyze_video_comments(video_url, limit=200):
+    response = requests.post(
+        "https://api.yourservice.com/youtube/comments",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "post_urls": [video_url],
+            "limit_per_post": limit,
+            "enrich": ["sentiment", "intent"]
+        }
+    )
+
+    data = response.json()
+    comments = data["data"]["comments"]
+
+    # Group by intent
+    by_intent = {}
+    for comment in comments:
+        intent = comment.get("enrichment", {}).get("intent", "unknown")
+        if intent not in by_intent:
+            by_intent[intent] = []
+        by_intent[intent].append(comment["text"])
+
+    return {
+        "total_comments": len(comments),
+        "by_intent": {k: len(v) for k, v in by_intent.items()},
+        "sample_complaints": by_intent.get("complaint", [])[:5],
+        "sample_questions": by_intent.get("question", [])[:5]
+    }
+```

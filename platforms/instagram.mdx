@@ -1,0 +1,404 @@
+---
+title: "Instagram"
+description: "Complete guide to fetching Instagram data"
+---
+
+
+Complete guide to fetching Instagram data including user posts, comments, and hashtag searches.
+
+## Endpoints Overview
+
+| Endpoint | Description | Credits |
+|----------|-------------|---------|
+| `POST /instagram/posts` | Get user's posts | 1 + 1/post |
+| `POST /instagram/comments` | Get post comments | 1 + 0.5/comment |
+| `POST /instagram/hashtag/posts` | Search posts by hashtag | 2 + 1/post |
+
+---
+
+## Get User Posts
+
+Fetch posts from an Instagram user's profile.
+
+### Basic Request
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "instagram",
+    "limit": 10
+  }'
+```
+
+### Using Numeric User ID
+
+Instagram also accepts numeric user IDs:
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "25025320",
+    "limit": 10
+  }'
+```
+
+### With Pagination
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "instagram",
+    "limit": 10,
+    "cursor": "QVFBb0R..."
+  }'
+```
+
+### With ML Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "instagram",
+    "limit": 10,
+    "enrich": ["sentiment", "topics", "intent", "keywords"],
+    "categories": {
+      "topic": ["product", "lifestyle", "promotion", "behind_the_scenes"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `username` | string | Yes | - | Instagram username or user ID |
+| `limit` | integer | No | 10 | Posts to fetch (1-100) |
+| `cursor` | string | No | - | Pagination cursor |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+| `llm_provider` | string | No | gemini-2.0-flash | LLM for enrichment |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "id": "CzKjH8wPL2n",
+        "shortcode": "CzKjH8wPL2n",
+        "caption": "Behind the scenes of our latest campaign #instagram",
+        "url": "https://www.instagram.com/p/CzKjH8wPL2n/",
+        "timestamp": "2024-01-15T14:30:00Z",
+        "media_type": "image",
+        "stats": {
+          "likes": 125000,
+          "comments": 3400
+        },
+        "enrichment": {
+          "sentiment": "positive",
+          "topics": ["behind_the_scenes", "promotion"],
+          "keywords": ["campaign", "behind", "scenes", "latest"]
+        }
+      }
+    ],
+    "cursor": "QVFBb0R...",
+    "has_more": true
+  },
+  "metadata": {
+    "credits_used": 31,
+    "enrichments": ["sentiment", "topics", "intent", "keywords"]
+  }
+}
+```
+
+---
+
+## Get Post Comments
+
+Fetch comments from Instagram posts. Supports multiple URL formats.
+
+### Using Full URL
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["https://www.instagram.com/p/CzKjH8wPL2n/"],
+    "limit_per_post": 50
+  }'
+```
+
+### Using Partial URL (without https://)
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["www.instagram.com/p/DRxQ9cIjceR"],
+    "limit_per_post": 50
+  }'
+```
+
+### Using Shortcode Only
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": ["CzKjH8wPL2n"],
+    "limit_per_post": 50
+  }'
+```
+
+### Mixed URL Formats
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/comments" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "post_urls": [
+      "https://www.instagram.com/p/DRxQ9cIjceR/",
+      "www.instagram.com/p/CzKjH8wPL2n",
+      "ABC123shortcode"
+    ],
+    "limit_per_post": 25,
+    "enrich": ["sentiment"]
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `post_urls` | array | Yes | - | Post URLs or shortcodes |
+| `limit_per_post` | integer | No | 50 | Comments per post (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "comments": [
+      {
+        "id": "18156789012345678",
+        "post_url": "https://www.instagram.com/p/CzKjH8wPL2n/",
+        "text": "Love this! Where can I get one?",
+        "user": "@fashionlover",
+        "timestamp": "2024-01-15T15:00:00Z",
+        "likes": 42,
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.89
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 26,
+    "enrichments": ["sentiment"]
+  }
+}
+```
+
+---
+
+## Search Hashtag Posts
+
+Search Instagram posts by hashtags.
+
+### Single Hashtag
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/hashtag/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["fashion"],
+    "days": 7,
+    "max_posts_per_hashtag": 100
+  }'
+```
+
+### Multiple Hashtags with Enrichment
+
+```bash
+curl -X POST "https://api.yourservice.com/instagram/hashtag/posts" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hashtags": ["fashion", "style", "ootd"],
+    "days": 14,
+    "max_posts_per_hashtag": 50,
+    "enrich": ["sentiment", "topics", "keywords"],
+    "categories": {
+      "topic": ["outfit", "brand", "trend", "seasonal"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `hashtags` | array | Yes | - | Hashtags to search (1-10) |
+| `days` | integer | No | 7 | Look back period (1-30) |
+| `max_posts_per_hashtag` | integer | No | 100 | Max posts per tag (1-500) |
+| `enrich` | array | No | - | ML enrichments |
+| `categories` | object | No | - | Custom topic categories |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "posts": [
+      {
+        "post_id": "CzKjH8wPL2n",
+        "post_text": "Today's look #fashion #style #ootd",
+        "post_time": "1705315800",
+        "profile_id": "123456789",
+        "profile_name": "fashionblogger",
+        "reaction_count": 8500,
+        "comment_count": 230,
+        "source_name": "fashion",
+        "post_url": "https://www.instagram.com/p/CzKjH8wPL2n/",
+        "enrichment": {
+          "sentiment": "positive",
+          "topics": ["outfit", "trend"],
+          "keywords": ["look", "style", "fashion", "ootd"]
+        }
+      }
+    ],
+    "hashtags": ["fashion", "style", "ootd"],
+    "days": 14,
+    "total_posts": 150
+  },
+  "metadata": {
+    "credits_used": 302,
+    "enrichments": ["sentiment", "topics", "keywords"]
+  }
+}
+```
+
+---
+
+## Python Examples
+
+### Fetch User Posts with Enrichment
+
+```python
+import requests
+
+def fetch_instagram_posts(username, limit=10, enrich=None):
+    payload = {
+        "username": username,
+        "limit": limit
+    }
+    if enrich:
+        payload["enrich"] = enrich
+
+    response = requests.post(
+        "https://api.yourservice.com/instagram/posts",
+        headers={"X-API-Key": "your-api-key"},
+        json=payload
+    )
+
+    return response.json()
+
+# Basic usage
+posts = fetch_instagram_posts("instagram", limit=20)
+
+# With enrichment
+enriched_posts = fetch_instagram_posts(
+    "instagram",
+    limit=20,
+    enrich=["sentiment", "topics"]
+)
+```
+
+### Analyze Comments Sentiment
+
+```python
+import requests
+from collections import Counter
+
+def analyze_post_comments(post_url, limit=100):
+    response = requests.post(
+        "https://api.yourservice.com/instagram/comments",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "post_urls": [post_url],
+            "limit_per_post": limit,
+            "enrich": ["sentiment"]
+        }
+    )
+
+    data = response.json()
+    comments = data["data"]["comments"]
+
+    # Count sentiments
+    sentiments = Counter(
+        c.get("enrichment", {}).get("sentiment", "unknown")
+        for c in comments
+    )
+
+    return {
+        "total_comments": len(comments),
+        "sentiment_distribution": dict(sentiments),
+        "positive_ratio": sentiments["positive"] / len(comments) if comments else 0
+    }
+```
+
+### Monitor Hashtag Trends
+
+```python
+import requests
+
+def monitor_hashtag_trends(hashtags, days=7):
+    response = requests.post(
+        "https://api.yourservice.com/instagram/hashtag/posts",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "hashtags": hashtags,
+            "days": days,
+            "max_posts_per_hashtag": 100,
+            "enrich": ["sentiment", "keywords"]
+        }
+    )
+
+    data = response.json()
+    posts = data["data"]["posts"]
+
+    # Extract all keywords
+    all_keywords = []
+    for post in posts:
+        keywords = post.get("enrichment", {}).get("keywords", [])
+        all_keywords.extend(keywords)
+
+    # Get top keywords
+    from collections import Counter
+    keyword_counts = Counter(all_keywords)
+
+    return {
+        "total_posts": len(posts),
+        "top_keywords": keyword_counts.most_common(20),
+        "hashtags_analyzed": hashtags
+    }
+```

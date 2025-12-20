@@ -1,0 +1,3501 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Clay Integration API",
+    "description": "\n## Overview\n\nThe Clay Integration API provides a unified interface to fetch and enrich social media data from multiple platforms including TikTok, Instagram, YouTube, and Reddit.\n\n## Key Features\n\n- **Multi-platform Support**: Access data from TikTok, Instagram, YouTube, and Reddit through a single API\n- **ML Enrichment**: Automatically analyze content with sentiment analysis, topic extraction, intent detection, and keyword extraction\n- **Credit-based Pricing**: Transparent credit consumption per request\n- **Pagination Support**: Efficiently handle large datasets with cursor-based pagination\n- **Bulk Operations**: Fetch data for multiple users or posts in a single request\n\n## Authentication\n\nAll API requests require an API key passed in the `X-API-Key` header:\n\n```\nX-API-Key: your_api_key_here\n```\n\n## Rate Limiting\n\n- Default: 100 requests per minute per API key\n- Rate limit headers are included in responses\n\n## Response Format\n\nAll endpoints return a consistent response structure:\n\n```json\n{\n  \"success\": true,\n  \"data\": { ... },\n  \"metadata\": {\n    \"credits_used\": 15,\n    \"processing_time\": 1.234,\n    \"cache_hit\": false,\n    \"failed_items\": [],\n    \"enrichments_applied\": [\"sentiment\"]\n  },\n  \"error\": null\n}\n```\n",
+    "contact": {
+      "name": "Clay Integration Support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "Proprietary"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Root",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tiktok/posts": {
+      "post": {
+        "tags": [
+          "tiktok"
+        ],
+        "summary": "Get User Posts",
+        "description": "Fetch posts from a TikTok user's profile with optional ML enrichment.",
+        "operationId": "get_posts_api_v1_tiktok_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with posts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request without enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "id": "7312345678901234567",
+                            "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                            "caption": "New dance tutorial coming soon! #dance #tutorial #fyp",
+                            "timestamp": "2024-01-15T10:30:00Z",
+                            "stats": {
+                              "views": 15000000,
+                              "likes": 2500000,
+                              "comments": 45000,
+                              "shares": 125000
+                            }
+                          },
+                          {
+                            "id": "7312345678901234568",
+                            "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234568",
+                            "caption": "Behind the scenes of my latest photoshoot #bts #model",
+                            "timestamp": "2024-01-14T15:45:00Z",
+                            "stats": {
+                              "views": 8500000,
+                              "likes": 1200000,
+                              "comments": 28000,
+                              "shares": 65000
+                            }
+                          }
+                        ],
+                        "cursor": "1705315800000",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 15,
+                        "processing_time": 0.523,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "id": "7312345678901234567",
+                            "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                            "caption": "New dance tutorial coming soon! #dance #tutorial #fyp",
+                            "timestamp": "2024-01-15T10:30:00Z",
+                            "stats": {
+                              "views": 15000000,
+                              "likes": 2500000,
+                              "comments": 45000,
+                              "shares": 125000
+                            },
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "engagement",
+                                "promotion"
+                              ],
+                              "topics": [
+                                "dance",
+                                "entertainment"
+                              ],
+                              "keywords": [
+                                "dance",
+                                "tutorial",
+                                "fyp"
+                              ]
+                            }
+                          }
+                        ],
+                        "cursor": "1705315800000",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 25,
+                        "processing_time": 1.234,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "503": {
+            "description": "Service temporarily unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tiktok/comments": {
+      "post": {
+        "tags": [
+          "tiktok"
+        ],
+        "summary": "Get Post Comments",
+        "description": "Fetch comments from TikTok posts with optional ML enrichment.",
+        "operationId": "get_comments_api_v1_tiktok_comments_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with comments",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request without enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "id": "comment_001",
+                            "post_url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                            "text": "Love this dance! You're amazing!",
+                            "user": "dance_fan_123",
+                            "timestamp": "2024-01-15T11:00:00Z"
+                          },
+                          {
+                            "id": "comment_002",
+                            "post_url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                            "text": "Can you do a tutorial for this?",
+                            "user": "beginner_dancer",
+                            "timestamp": "2024-01-15T11:05:00Z"
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 75,
+                        "processing_time": 0.892,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "id": "comment_001",
+                            "post_url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                            "text": "Love this dance! You're amazing!",
+                            "user": "dance_fan_123",
+                            "timestamp": "2024-01-15T11:00:00Z",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "praise",
+                                "engagement"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 125,
+                        "processing_time": 1.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tiktok/bulk/posts": {
+      "post": {
+        "tags": [
+          "tiktok"
+        ],
+        "summary": "Bulk Get User Posts",
+        "description": "Fetch posts from multiple TikTok users in a single request.",
+        "operationId": "bulk_posts_api_v1_tiktok_bulk_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkPostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with posts grouped by user",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic bulk request",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "users": [
+                          {
+                            "username": "charlidamelio",
+                            "posts": [
+                              {
+                                "id": "7312345678901234567",
+                                "url": "https://www.tiktok.com/@charlidamelio/video/7312345678901234567",
+                                "caption": "New dance tutorial!",
+                                "timestamp": "2024-01-15T10:30:00Z",
+                                "stats": {
+                                  "views": 15000000,
+                                  "likes": 2500000
+                                }
+                              }
+                            ]
+                          },
+                          {
+                            "username": "therock",
+                            "posts": [
+                              {
+                                "id": "7312345678901234599",
+                                "url": "https://www.tiktok.com/@therock/video/7312345678901234599",
+                                "caption": "Morning workout motivation",
+                                "timestamp": "2024-01-15T06:00:00Z",
+                                "stats": {
+                                  "views": 25000000,
+                                  "likes": 4500000
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 45,
+                        "processing_time": 2.345,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tiktok/hashtag/posts": {
+      "post": {
+        "tags": [
+          "tiktok"
+        ],
+        "summary": "Search Hashtag Posts",
+        "description": "Search TikTok posts by hashtags with date filtering.",
+        "operationId": "get_hashtag_posts_api_v1_tiktok_hashtag_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HashtagPostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with hashtag posts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic hashtag search",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "7312345678901234567",
+                            "post_text": "This trend is everywhere! #fyp #viral",
+                            "post_time": "1705315800",
+                            "profile_id": "user123",
+                            "download_videos": "https://cdn.tiktok.com/video.mp4",
+                            "reaction_count": 1500000,
+                            "share_count": 85000,
+                            "play_count": 25000000,
+                            "comment_count": 42000,
+                            "profile_secUid": "MS4wLjABAAAA...",
+                            "profile_name": "trending_creator",
+                            "profile_nickname": "Trending Creator",
+                            "profile_description": "Content creator | 10M followers",
+                            "original_audio": "original",
+                            "download_audio": "https://cdn.tiktok.com/audio.mp3",
+                            "source_name": "fyp",
+                            "post_url": "www.tiktok.com/@trending_creator/video/7312345678901234567",
+                            "profile_url": "www.tiktok.com/@trending_creator"
+                          }
+                        ],
+                        "hashtags": [
+                          "fyp"
+                        ],
+                        "days": 7,
+                        "total_posts": 100
+                      },
+                      "metadata": {
+                        "credits_used": 150,
+                        "processing_time": 3.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "7312345678901234567",
+                            "post_text": "This trend is everywhere! #fyp #viral",
+                            "post_time": "1705315800",
+                            "profile_id": "user123",
+                            "reaction_count": 1500000,
+                            "share_count": 85000,
+                            "play_count": 25000000,
+                            "comment_count": 42000,
+                            "profile_name": "trending_creator",
+                            "profile_nickname": "Trending Creator",
+                            "source_name": "fyp",
+                            "post_url": "www.tiktok.com/@trending_creator/video/7312345678901234567",
+                            "profile_url": "www.tiktok.com/@trending_creator",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "entertainment",
+                                "engagement"
+                              ],
+                              "topics": [
+                                "trends",
+                                "viral"
+                              ],
+                              "keywords": [
+                                "fyp",
+                                "viral",
+                                "trending"
+                              ]
+                            }
+                          }
+                        ],
+                        "hashtags": [
+                          "fyp",
+                          "dance"
+                        ],
+                        "days": 7,
+                        "total_posts": 100
+                      },
+                      "metadata": {
+                        "credits_used": 250,
+                        "processing_time": 5.678,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instagram/posts": {
+      "post": {
+        "tags": [
+          "instagram"
+        ],
+        "summary": "Get User Posts",
+        "description": "Fetch posts from an Instagram user profile with optional ML enrichment.",
+        "operationId": "get_posts_api_v1_instagram_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with posts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "image_link": "https://instagram.com/p/ABC123/media",
+                            "photo_text": "Photo of sunset at beach",
+                            "post_text": "Beautiful sunset at Malibu #sunset #beach #california",
+                            "post_id": "ABC123XYZ",
+                            "comment_count": 1250,
+                            "post_time": 1705315800,
+                            "reaction_count": 45000,
+                            "profile_id": "1317252749",
+                            "profile_name": "travel_photographer",
+                            "download_image": "https://instagram.com/p/ABC123/media",
+                            "media_text": "Sunset photo",
+                            "source_user_id": "1317252749",
+                            "post_url": "www.instagram.com/p/ABC123XYZ",
+                            "profile_url": "www.instagram.com/travel_photographer"
+                          }
+                        ],
+                        "cursor": "QVFDNHRfZjBwX2...",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 25,
+                        "processing_time": 0.678,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "image_link": "https://instagram.com/p/ABC123/media",
+                            "post_text": "Beautiful sunset at Malibu #sunset #beach #california",
+                            "post_id": "ABC123XYZ",
+                            "comment_count": 1250,
+                            "post_time": 1705315800,
+                            "reaction_count": 45000,
+                            "profile_id": "1317252749",
+                            "profile_name": "travel_photographer",
+                            "post_url": "www.instagram.com/p/ABC123XYZ",
+                            "profile_url": "www.instagram.com/travel_photographer",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "sharing",
+                                "engagement"
+                              ],
+                              "topics": [
+                                "travel",
+                                "nature",
+                                "photography"
+                              ],
+                              "keywords": [
+                                "sunset",
+                                "beach",
+                                "california",
+                                "malibu"
+                              ]
+                            }
+                          }
+                        ],
+                        "cursor": "QVFDNHRfZjBwX2...",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 35,
+                        "processing_time": 1.234,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "503": {
+            "description": "Service temporarily unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instagram/hashtag/posts": {
+      "post": {
+        "tags": [
+          "instagram"
+        ],
+        "summary": "Search Hashtag Posts",
+        "description": "Search Instagram posts by hashtags with pagination support.",
+        "operationId": "get_hashtag_posts_api_v1_instagram_hashtag_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HashtagPostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with hashtag posts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic hashtag search",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_text": "Morning workout complete! \ud83d\udcaa #fitness #gym #motivation",
+                            "post_id": "CzKjH8wPL2n",
+                            "comment_count": 856,
+                            "post_time": 1705315800,
+                            "reaction_count": 12500,
+                            "profile_id": "987654321",
+                            "profile_name": "fitness_coach_mike",
+                            "photo_text": "Person doing deadlift at gym",
+                            "image_link": "https://instagram.com/p/CzKjH8wPL2n/media",
+                            "source_name": "fitness",
+                            "post_url": "www.instagram.com/p/CzKjH8wPL2n",
+                            "profile_url": "www.instagram.com/fitness_coach_mike",
+                            "download_image": "https://instagram.com/p/CzKjH8wPL2n/media",
+                            "media_text": "Deadlift exercise"
+                          }
+                        ],
+                        "hashtags": [
+                          "fitness"
+                        ],
+                        "total_posts": 50
+                      },
+                      "metadata": {
+                        "credits_used": 125,
+                        "processing_time": 2.345,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_text": "Morning workout complete! \ud83d\udcaa #fitness #gym #motivation",
+                            "post_id": "CzKjH8wPL2n",
+                            "comment_count": 856,
+                            "post_time": 1705315800,
+                            "reaction_count": 12500,
+                            "profile_id": "987654321",
+                            "profile_name": "fitness_coach_mike",
+                            "source_name": "fitness",
+                            "post_url": "www.instagram.com/p/CzKjH8wPL2n",
+                            "profile_url": "www.instagram.com/fitness_coach_mike",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "motivation",
+                                "sharing"
+                              ],
+                              "topics": [
+                                "fitness",
+                                "health",
+                                "lifestyle"
+                              ],
+                              "keywords": [
+                                "workout",
+                                "gym",
+                                "motivation",
+                                "fitness"
+                              ]
+                            }
+                          }
+                        ],
+                        "hashtags": [
+                          "fitness",
+                          "gym"
+                        ],
+                        "total_posts": 50
+                      },
+                      "metadata": {
+                        "credits_used": 175,
+                        "processing_time": 3.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/instagram/comments": {
+      "post": {
+        "tags": [
+          "instagram"
+        ],
+        "summary": "Get Post Comments",
+        "description": "Fetch comments from Instagram posts with optional ML enrichment.",
+        "operationId": "get_comments_api_v1_instagram_comments_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with comments",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "post_id": "DRxQ9cIjceR",
+                            "comment_id": "17895634521",
+                            "comment_text": "This is amazing! Love your content \ud83d\ude0d",
+                            "comment_time": 1705315800,
+                            "commenter_id": "456789123",
+                            "commenter_name": "happy_follower",
+                            "commenter_reaction_count": 45,
+                            "commenter_url": "www.instagram.com/happy_follower"
+                          },
+                          {
+                            "post_id": "DRxQ9cIjceR",
+                            "comment_id": "17895634522",
+                            "comment_text": "Where did you get that outfit?",
+                            "comment_time": 1705316400,
+                            "commenter_id": "789123456",
+                            "commenter_name": "fashion_lover",
+                            "commenter_reaction_count": 12,
+                            "commenter_url": "www.instagram.com/fashion_lover"
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 125,
+                        "processing_time": 0.987,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "post_id": "DRxQ9cIjceR",
+                            "comment_id": "17895634521",
+                            "comment_text": "This is amazing! Love your content \ud83d\ude0d",
+                            "comment_time": 1705315800,
+                            "commenter_id": "456789123",
+                            "commenter_name": "happy_follower",
+                            "commenter_reaction_count": 45,
+                            "commenter_url": "www.instagram.com/happy_follower",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "praise",
+                                "engagement"
+                              ],
+                              "topics": [
+                                "appreciation"
+                              ],
+                              "keywords": [
+                                "amazing",
+                                "love",
+                                "content"
+                              ]
+                            }
+                          },
+                          {
+                            "post_id": "DRxQ9cIjceR",
+                            "comment_id": "17895634522",
+                            "comment_text": "Where did you get that outfit?",
+                            "comment_time": 1705316400,
+                            "commenter_id": "789123456",
+                            "commenter_name": "fashion_lover",
+                            "commenter_reaction_count": 12,
+                            "commenter_url": "www.instagram.com/fashion_lover",
+                            "enrichment": {
+                              "sentiment": "neutral",
+                              "intent": [
+                                "question",
+                                "purchase_interest"
+                              ],
+                              "topics": [
+                                "fashion",
+                                "shopping"
+                              ],
+                              "keywords": [
+                                "outfit",
+                                "where"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 175,
+                        "processing_time": 1.567,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/search": {
+      "post": {
+        "tags": [
+          "youtube"
+        ],
+        "summary": "Search Videos",
+        "description": "Search YouTube videos by keywords with sorting and time period filters.",
+        "operationId": "search_videos_api_v1_youtube_search_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with videos",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic search",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "dQw4w9WgXcQ",
+                            "post_title": "Python Tutorial for Beginners - Full Course",
+                            "post_text": "Learn Python programming from scratch in this comprehensive tutorial...",
+                            "post_time": 1705315800,
+                            "channel_id": "UC8butISFwT-Wl7EV0hUK0BQ",
+                            "channel_name": "freeCodeCamp.org",
+                            "view_count": 15000000,
+                            "like_count": 350000,
+                            "comment_count": 12500,
+                            "thumbnail": "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+                            "post_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            "channel_url": "https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ",
+                            "source_name": "python tutorial"
+                          }
+                        ],
+                        "keywords": [
+                          "python tutorial"
+                        ],
+                        "total_posts": 10
+                      },
+                      "metadata": {
+                        "credits_used": 15,
+                        "processing_time": 0.876,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "dQw4w9WgXcQ",
+                            "post_title": "Python Tutorial for Beginners - Full Course",
+                            "post_text": "Learn Python programming from scratch...",
+                            "post_time": 1705315800,
+                            "channel_id": "UC8butISFwT-Wl7EV0hUK0BQ",
+                            "channel_name": "freeCodeCamp.org",
+                            "view_count": 15000000,
+                            "like_count": 350000,
+                            "comment_count": 12500,
+                            "post_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            "channel_url": "https://www.youtube.com/channel/UC8butISFwT-Wl7EV0hUK0BQ",
+                            "source_name": "python",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "education",
+                                "tutorial"
+                              ],
+                              "topics": [
+                                "programming",
+                                "python",
+                                "education"
+                              ],
+                              "keywords": [
+                                "python",
+                                "tutorial",
+                                "beginners",
+                                "programming"
+                              ]
+                            }
+                          }
+                        ],
+                        "keywords": [
+                          "python"
+                        ],
+                        "total_posts": 10
+                      },
+                      "metadata": {
+                        "credits_used": 25,
+                        "processing_time": 1.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/comments": {
+      "post": {
+        "tags": [
+          "youtube"
+        ],
+        "summary": "Get Video Comments",
+        "description": "Fetch comments from YouTube videos with optional ML enrichment.",
+        "operationId": "get_comments_api_v1_youtube_comments_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with comments",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "post_id": "dQw4w9WgXcQ",
+                            "post_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            "comment_count": 125000,
+                            "comment_id": "UgzX1234567890",
+                            "comment_text": "This tutorial saved my life! Thank you so much!",
+                            "comment_time": 1705315800,
+                            "comment_reaction_count": 2500,
+                            "commenter_name": "grateful_student",
+                            "commenter_id": "UCabc123",
+                            "commenter_url": "https://www.youtube.com/channel/UCabc123",
+                            "reply_count": 45
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 75,
+                        "processing_time": 1.234,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "post_id": "dQw4w9WgXcQ",
+                            "post_url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                            "comment_count": 125000,
+                            "comment_id": "UgzX1234567890",
+                            "comment_text": "This tutorial saved my life! Thank you so much!",
+                            "comment_time": 1705315800,
+                            "comment_reaction_count": 2500,
+                            "commenter_name": "grateful_student",
+                            "commenter_id": "UCabc123",
+                            "commenter_url": "https://www.youtube.com/channel/UCabc123",
+                            "reply_count": 45,
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "gratitude",
+                                "feedback"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 125,
+                        "processing_time": 1.789,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/hashtag/search": {
+      "post": {
+        "tags": [
+          "youtube"
+        ],
+        "summary": "Search by Hashtags",
+        "description": "Search YouTube videos by hashtags with optional Shorts filter.",
+        "operationId": "search_hashtag_api_v1_youtube_hashtag_search_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeHashtagSearchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with videos",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic hashtag search",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "videos": [
+                          {
+                            "post_id": "abc123xyz",
+                            "post_url": "https://www.youtube.com/watch?v=abc123xyz",
+                            "post_text": "Python tips and tricks #python #coding",
+                            "post_time": 1705315800,
+                            "profile_id": "UCxyz123",
+                            "profile_name": "CodeMaster",
+                            "profile_url": "https://www.youtube.com/channel/UCxyz123",
+                            "post_views": "125000",
+                            "source_name": "python"
+                          }
+                        ],
+                        "hashtags": [
+                          "python"
+                        ],
+                        "total_videos": 25
+                      },
+                      "metadata": {
+                        "credits_used": 38,
+                        "processing_time": 0.678,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/channel/videos": {
+      "post": {
+        "tags": [
+          "youtube"
+        ],
+        "summary": "Get Channel Videos",
+        "description": "Fetch videos from YouTube channels by browse ID.",
+        "operationId": "get_channel_videos_api_v1_youtube_channel_videos_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeChannelVideosRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with videos",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic channel videos",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "videos": [
+                          {
+                            "post_id": "xyz789abc",
+                            "post_url": "https://www.youtube.com/watch?v=xyz789abc",
+                            "post_text": "Google I/O 2024 Keynote Highlights",
+                            "post_time": 1705315800,
+                            "profile_id": "GoogleDevelopers",
+                            "profile_name": "Google Developers",
+                            "profile_url": "https://www.youtube.com/@GoogleDevelopers",
+                            "reaction_count": 850000
+                          }
+                        ],
+                        "browse_ids": [
+                          "UC_x5XG1OV2P6uZZ5FSM9Ttw"
+                        ],
+                        "total_videos": 50
+                      },
+                      "metadata": {
+                        "credits_used": 75,
+                        "processing_time": 1.567,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/youtube/channel/shorts": {
+      "post": {
+        "tags": [
+          "youtube"
+        ],
+        "summary": "Get Channel Shorts",
+        "description": "Fetch YouTube Shorts from channels by browse ID.",
+        "operationId": "get_channel_shorts_api_v1_youtube_channel_shorts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeChannelShortsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with shorts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic channel shorts",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "shorts": [
+                          {
+                            "post_id": "short123",
+                            "post_url": "https://www.youtube.com/shorts/short123",
+                            "post_text": "Quick Python tip! #python #coding #shorts",
+                            "post_time": 1705315800,
+                            "profile_id": "GoogleDevelopers",
+                            "profile_name": "Google Developers",
+                            "profile_url": "https://www.youtube.com/@GoogleDevelopers",
+                            "post_views": 2500000
+                          }
+                        ],
+                        "browse_ids": [
+                          "UC_x5XG1OV2P6uZZ5FSM9Ttw"
+                        ],
+                        "total_shorts": 25
+                      },
+                      "metadata": {
+                        "credits_used": 38,
+                        "processing_time": 0.987,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reddit/posts": {
+      "post": {
+        "tags": [
+          "reddit"
+        ],
+        "summary": "Get Subreddit Posts",
+        "description": "Fetch posts from a Reddit subreddit with sorting options.",
+        "operationId": "get_subRedditPosts_api_v1_reddit_posts_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedditSubRedditPostsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with posts",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request without enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "1abc123",
+                            "post_title": "I built a web scraper in Python and it changed my workflow",
+                            "post_text": "After years of manually collecting data, I finally learned Python and built a web scraper. Here's what I learned...",
+                            "post_time": 1705315800,
+                            "post_url": "https://www.reddit.com/r/python/comments/1abc123/",
+                            "author": "python_enthusiast",
+                            "subreddit": "python",
+                            "upvotes": 2500,
+                            "downvotes": 45,
+                            "comment_count": 234,
+                            "permalink": "/r/python/comments/1abc123/i_built_a_web_scraper/"
+                          },
+                          {
+                            "post_id": "1def456",
+                            "post_title": "Best practices for Python project structure in 2024?",
+                            "post_text": "I'm starting a new project and want to follow best practices. What's the recommended project structure?",
+                            "post_time": 1705302000,
+                            "post_url": "https://www.reddit.com/r/python/comments/1def456/",
+                            "author": "new_dev_2024",
+                            "subreddit": "python",
+                            "upvotes": 856,
+                            "downvotes": 12,
+                            "comment_count": 89,
+                            "permalink": "/r/python/comments/1def456/best_practices_2024/"
+                          }
+                        ],
+                        "cursor": "t3_1def456",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 15,
+                        "processing_time": 0.567,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "posts": [
+                          {
+                            "post_id": "1abc123",
+                            "post_title": "I built a web scraper in Python and it changed my workflow",
+                            "post_text": "After years of manually collecting data, I finally learned Python...",
+                            "post_time": 1705315800,
+                            "post_url": "https://www.reddit.com/r/python/comments/1abc123/",
+                            "author": "python_enthusiast",
+                            "subreddit": "python",
+                            "upvotes": 2500,
+                            "comment_count": 234,
+                            "permalink": "/r/python/comments/1abc123/i_built_a_web_scraper/",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "sharing",
+                                "education"
+                              ],
+                              "topics": [
+                                "python",
+                                "automation",
+                                "web scraping"
+                              ],
+                              "keywords": [
+                                "python",
+                                "web scraper",
+                                "workflow",
+                                "automation"
+                              ]
+                            }
+                          }
+                        ],
+                        "cursor": "t3_1abc123",
+                        "has_more": true
+                      },
+                      "metadata": {
+                        "credits_used": 35,
+                        "processing_time": 1.234,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "503": {
+            "description": "Service temporarily unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reddit/comments": {
+      "post": {
+        "tags": [
+          "reddit"
+        ],
+        "summary": "Get Post Comments",
+        "description": "Fetch comments from a Reddit post with optional ML enrichment.",
+        "operationId": "get_subRedditComments_api_v1_reddit_comments_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RedditSubRedditCommentsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with comments",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "basic": {
+                    "summary": "Basic request without enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "comment_id": "k8xyz123",
+                            "body": "This is exactly what I've been looking for! Great work on this project.",
+                            "author": "helpful_redditor",
+                            "created_utc": 1705315800,
+                            "score": 125,
+                            "permalink": "/r/Python/comments/1pilhi2/comment/k8xyz123/",
+                            "parent_id": "t3_1pilhi2",
+                            "is_submitter": false,
+                            "depth": 0
+                          },
+                          {
+                            "comment_id": "k8abc456",
+                            "body": "Have you considered adding support for async operations?",
+                            "author": "curious_dev",
+                            "created_utc": 1705316400,
+                            "score": 45,
+                            "permalink": "/r/Python/comments/1pilhi2/comment/k8abc456/",
+                            "parent_id": "t1_k8xyz123",
+                            "is_submitter": false,
+                            "depth": 1
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 75,
+                        "processing_time": 0.876,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": []
+                      }
+                    }
+                  },
+                  "with_enrichment": {
+                    "summary": "With ML enrichment",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "comments": [
+                          {
+                            "comment_id": "k8xyz123",
+                            "body": "This is exactly what I've been looking for! Great work on this project.",
+                            "author": "helpful_redditor",
+                            "created_utc": 1705315800,
+                            "score": 125,
+                            "permalink": "/r/Python/comments/1pilhi2/comment/k8xyz123/",
+                            "parent_id": "t3_1pilhi2",
+                            "enrichment": {
+                              "sentiment": "positive",
+                              "intent": [
+                                "praise",
+                                "feedback"
+                              ]
+                            }
+                          },
+                          {
+                            "comment_id": "k8abc456",
+                            "body": "Have you considered adding support for async operations?",
+                            "author": "curious_dev",
+                            "created_utc": 1705316400,
+                            "score": 45,
+                            "permalink": "/r/Python/comments/1pilhi2/comment/k8abc456/",
+                            "parent_id": "t1_k8xyz123",
+                            "enrichment": {
+                              "sentiment": "neutral",
+                              "intent": [
+                                "question",
+                                "suggestion"
+                              ]
+                            }
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 125,
+                        "processing_time": 1.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "503": {
+            "description": "Service temporarily unavailable"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/analyze": {
+      "post": {
+        "tags": [
+          "ml"
+        ],
+        "summary": "Analyze Text",
+        "description": "Perform ML analysis on text for sentiment, topics, intent, and keywords.",
+        "operationId": "analyze_api_v1_ml_analyze_post",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Api-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MLAnalyzeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response with analysis results",
+            "content": {
+              "application/json": {
+                "schema": {},
+                "examples": {
+                  "sentiment_only": {
+                    "summary": "Sentiment analysis only",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "results": [
+                          {
+                            "id": 0,
+                            "text": "I absolutely love this product! Best purchase ever!",
+                            "sentiment": "positive"
+                          },
+                          {
+                            "id": 1,
+                            "text": "This is terrible. Complete waste of money.",
+                            "sentiment": "negative"
+                          },
+                          {
+                            "id": 2,
+                            "text": "The product arrived on time. It works as expected.",
+                            "sentiment": "neutral"
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 3,
+                        "processing_time": 0.456,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment"
+                        ]
+                      }
+                    }
+                  },
+                  "full_analysis": {
+                    "summary": "Full analysis with all enrichments",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "results": [
+                          {
+                            "id": 0,
+                            "text": "I love this new feature! Can't wait to try it out!",
+                            "sentiment": "positive",
+                            "intent": [
+                              "excitement",
+                              "engagement"
+                            ],
+                            "topics": [
+                              "product",
+                              "features"
+                            ],
+                            "keywords": [
+                              "love",
+                              "new feature",
+                              "try"
+                            ]
+                          },
+                          {
+                            "id": 1,
+                            "text": "How do I return this item? It doesn't work properly.",
+                            "sentiment": "negative",
+                            "intent": [
+                              "question",
+                              "complaint",
+                              "return_request"
+                            ],
+                            "topics": [
+                              "returns",
+                              "product_issue"
+                            ],
+                            "keywords": [
+                              "return",
+                              "doesn't work",
+                              "item"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "text": "Just ordered the premium version. Excited to see the results!",
+                            "sentiment": "positive",
+                            "intent": [
+                              "purchase",
+                              "anticipation"
+                            ],
+                            "topics": [
+                              "product",
+                              "upgrade"
+                            ],
+                            "keywords": [
+                              "ordered",
+                              "premium",
+                              "excited",
+                              "results"
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 12,
+                        "processing_time": 1.234,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  },
+                  "custom_categories": {
+                    "summary": "With custom topic categories",
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "results": [
+                          {
+                            "id": 0,
+                            "text": "The shipping was fast and the packaging was excellent",
+                            "sentiment": "positive",
+                            "intent": [
+                              "feedback",
+                              "praise"
+                            ],
+                            "topics": [
+                              "shipping"
+                            ],
+                            "keywords": [
+                              "shipping",
+                              "fast",
+                              "packaging",
+                              "excellent"
+                            ]
+                          },
+                          {
+                            "id": 1,
+                            "text": "I want to know more about your enterprise pricing",
+                            "sentiment": "neutral",
+                            "intent": [
+                              "inquiry",
+                              "sales_interest"
+                            ],
+                            "topics": [
+                              "pricing"
+                            ],
+                            "keywords": [
+                              "enterprise",
+                              "pricing",
+                              "know more"
+                            ]
+                          },
+                          {
+                            "id": 2,
+                            "text": "Your customer service team was very helpful",
+                            "sentiment": "positive",
+                            "intent": [
+                              "feedback",
+                              "praise"
+                            ],
+                            "topics": [
+                              "support"
+                            ],
+                            "keywords": [
+                              "customer service",
+                              "helpful",
+                              "team"
+                            ]
+                          }
+                        ]
+                      },
+                      "metadata": {
+                        "credits_used": 12,
+                        "processing_time": 1.567,
+                        "cache_hit": false,
+                        "failed_items": [],
+                        "enrichments_applied": [
+                          "sentiment",
+                          "intent",
+                          "keywords",
+                          "topics"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters"
+          },
+          "401": {
+            "description": "Invalid or missing API key"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BulkPostsRequest": {
+        "properties": {
+          "usernames": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Usernames",
+            "description": "List of usernames to fetch posts from",
+            "examples": [
+              [
+                "charlidamelio",
+                "therock",
+                "khaby.lame"
+              ]
+            ]
+          },
+          "limit_per_user": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit Per User",
+            "description": "Posts to fetch per user (1-100)",
+            "default": 10,
+            "examples": [
+              5,
+              10,
+              25
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "usernames"
+        ],
+        "title": "BulkPostsRequest",
+        "description": "Request body for fetching posts from multiple users."
+      },
+      "CommentsRequest": {
+        "properties": {
+          "post_urls": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Post Urls",
+            "description": "List of post URLs or IDs to fetch comments from",
+            "examples": [
+              [
+                "https://www.tiktok.com/@charlidamelio/video/7312345678901234567"
+              ],
+              [
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                "https://youtu.be/jNQXAC9IVRw"
+              ],
+              [
+                "www.instagram.com/p/DRxQ9cIjceR",
+                "CzKjH8wPL2n"
+              ]
+            ]
+          },
+          "limit_per_post": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Limit Per Post",
+            "description": "Maximum comments to fetch per post (1-500)",
+            "default": 50,
+            "examples": [
+              25,
+              50,
+              100
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment"
+              ],
+              [
+                "sentiment",
+                "intent"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification",
+            "examples": [
+              {
+                "topic": [
+                  "product",
+                  "service",
+                  "support"
+                ]
+              }
+            ]
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "post_urls"
+        ],
+        "title": "CommentsRequest",
+        "description": "Request body for fetching comments from posts."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HashtagPostsRequest": {
+        "properties": {
+          "hashtags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Hashtags",
+            "description": "List of hashtags to search (1-10)",
+            "examples": [
+              [
+                "fyp"
+              ],
+              [
+                "fitness",
+                "workout",
+                "gym"
+              ]
+            ]
+          },
+          "days": {
+            "type": "integer",
+            "maximum": 30.0,
+            "minimum": 1.0,
+            "title": "Days",
+            "description": "Look back period in days (1-30)",
+            "default": 7,
+            "examples": [
+              7,
+              14,
+              30
+            ]
+          },
+          "max_posts_per_hashtag": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Max Posts Per Hashtag",
+            "description": "Maximum posts per hashtag (1-500)",
+            "default": 100,
+            "examples": [
+              50,
+              100,
+              200
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "intent",
+                "keywords",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification",
+            "examples": [
+              {
+                "topic": [
+                  "product",
+                  "service",
+                  "entertainment"
+                ]
+              }
+            ]
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "hashtags"
+        ],
+        "title": "HashtagPostsRequest",
+        "description": "Request body for searching posts by hashtags (TikTok/Instagram)."
+      },
+      "MLAnalyzeRequest": {
+        "properties": {
+          "texts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 25,
+            "minItems": 1,
+            "title": "Texts",
+            "description": "List of texts to analyze (1-25)",
+            "examples": [
+              [
+                "I love this product!",
+                "This is terrible.",
+                "It works as expected."
+              ],
+              [
+                "Great service!",
+                "Need a refund please",
+                "How do I contact support?"
+              ]
+            ]
+          },
+          "analyses": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Analyses",
+            "description": "Types of analysis to perform",
+            "examples": [
+              [
+                "sentiment"
+              ],
+              [
+                "sentiment",
+                "intent",
+                "keywords",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for classification",
+            "examples": [
+              {
+                "topic": [
+                  "product",
+                  "service",
+                  "shipping",
+                  "pricing",
+                  "support"
+                ]
+              }
+            ]
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for analysis",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "texts",
+          "analyses"
+        ],
+        "title": "MLAnalyzeRequest",
+        "description": "Request body for ML text analysis."
+      },
+      "PostsRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username",
+            "description": "Username or user ID to fetch posts from",
+            "examples": [
+              "charlidamelio",
+              "1317252749"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "Number of posts to fetch (1-100)",
+            "default": 10,
+            "examples": [
+              10,
+              25,
+              50
+            ]
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cursor",
+            "description": "Pagination cursor from previous response",
+            "examples": [
+              "1705315800000"
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "topics"
+              ],
+              [
+                "sentiment",
+                "intent",
+                "keywords",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification",
+            "examples": [
+              {
+                "topic": [
+                  "product",
+                  "service",
+                  "entertainment"
+                ]
+              }
+            ]
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "username"
+        ],
+        "title": "PostsRequest",
+        "description": "Request body for fetching user posts (TikTok/Instagram)."
+      },
+      "RedditSubRedditCommentsRequest": {
+        "properties": {
+          "permalink": {
+            "type": "string",
+            "title": "Permalink",
+            "description": "Post permalink (supports full URL or path)",
+            "examples": [
+              "/r/Python/comments/1pilhi2/metacode_the_new_standard/",
+              "https://www.reddit.com/r/Python/comments/1pilhi2/metacode/"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "Maximum comments to fetch (1-500)",
+            "default": 50,
+            "examples": [
+              50,
+              100,
+              200
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment"
+              ],
+              [
+                "sentiment",
+                "intent"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "permalink"
+        ],
+        "title": "RedditSubRedditCommentsRequest",
+        "description": "Request body for fetching Reddit post comments."
+      },
+      "RedditSubRedditPostsRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Subreddit name (without r/)",
+            "examples": [
+              "python",
+              "javascript",
+              "machinelearning"
+            ]
+          },
+          "sort": {
+            "type": "string",
+            "title": "Sort",
+            "description": "Sort order: new, hot, top, controversial, rising",
+            "default": "new",
+            "examples": [
+              "new",
+              "hot",
+              "top"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Limit",
+            "description": "Number of posts to fetch (1-100)",
+            "default": 10,
+            "examples": [
+              10,
+              25,
+              50
+            ]
+          },
+          "period": {
+            "type": "string",
+            "title": "Period",
+            "description": "Time period for top/controversial: day, week, month, year, all",
+            "default": "day",
+            "examples": [
+              "day",
+              "week",
+              "month"
+            ]
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cursor",
+            "description": "Pagination cursor from previous response",
+            "examples": [
+              "t3_abc123"
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment"
+              ],
+              [
+                "sentiment",
+                "intent",
+                "keywords",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "RedditSubRedditPostsRequest",
+        "description": "Request body for fetching subreddit posts."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "YouTubeChannelShortsRequest": {
+        "properties": {
+          "browse_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Browse Ids",
+            "description": "Channel browse IDs (1-10)",
+            "examples": [
+              [
+                "UC_x5XG1OV2P6uZZ5FSM9Ttw"
+              ]
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "browse_ids"
+        ],
+        "title": "YouTubeChannelShortsRequest",
+        "description": "Request body for fetching YouTube Shorts from channels."
+      },
+      "YouTubeChannelVideosRequest": {
+        "properties": {
+          "browse_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Browse Ids",
+            "description": "Channel browse IDs (1-10)",
+            "examples": [
+              [
+                "UC_x5XG1OV2P6uZZ5FSM9Ttw"
+              ],
+              [
+                "UC_x5XG1OV2P6uZZ5FSM9Ttw",
+                "UCBJycsmduvYEL83R_U4JriQ"
+              ]
+            ]
+          },
+          "depth": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Depth",
+            "description": "API pagination depth (1-50)",
+            "default": 10,
+            "examples": [
+              10,
+              25,
+              50
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "browse_ids"
+        ],
+        "title": "YouTubeChannelVideosRequest",
+        "description": "Request body for fetching videos from YouTube channels."
+      },
+      "YouTubeHashtagSearchRequest": {
+        "properties": {
+          "hashtags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Hashtags",
+            "description": "Hashtags to search (1-10)",
+            "examples": [
+              [
+                "python"
+              ],
+              [
+                "python",
+                "coding",
+                "programming"
+              ]
+            ]
+          },
+          "depth": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Depth",
+            "description": "API pagination depth (1-50)",
+            "default": 1,
+            "examples": [
+              1,
+              5,
+              10
+            ]
+          },
+          "only_shorts": {
+            "type": "boolean",
+            "title": "Only Shorts",
+            "description": "Filter to only return YouTube Shorts",
+            "default": false,
+            "examples": [
+              false,
+              true
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification"
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "hashtags"
+        ],
+        "title": "YouTubeHashtagSearchRequest",
+        "description": "Request body for searching YouTube videos by hashtags."
+      },
+      "YouTubeSearchRequest": {
+        "properties": {
+          "keywords": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Keywords",
+            "description": "Search keywords (1-10)",
+            "examples": [
+              [
+                "python tutorial"
+              ],
+              [
+                "python",
+                "javascript",
+                "react"
+              ]
+            ]
+          },
+          "max_posts_per_keyword": {
+            "type": "integer",
+            "maximum": 500.0,
+            "minimum": 1.0,
+            "title": "Max Posts Per Keyword",
+            "description": "Maximum videos per keyword (1-500)",
+            "default": 100,
+            "examples": [
+              10,
+              50,
+              100
+            ]
+          },
+          "depth": {
+            "type": "integer",
+            "maximum": 50.0,
+            "minimum": 1.0,
+            "title": "Depth",
+            "description": "API pagination depth (1-50)",
+            "default": 30,
+            "examples": [
+              10,
+              30,
+              50
+            ]
+          },
+          "period": {
+            "type": "string",
+            "pattern": "^(today|week|month|all)$",
+            "title": "Period",
+            "description": "Time filter: today, week, month, all",
+            "default": "today",
+            "examples": [
+              "today",
+              "week",
+              "month"
+            ]
+          },
+          "sorting": {
+            "type": "string",
+            "pattern": "^(relevance|date|viewCount|rating)$",
+            "title": "Sorting",
+            "description": "Sort by: relevance, date, viewCount, rating",
+            "default": "relevance",
+            "examples": [
+              "relevance",
+              "date",
+              "viewCount"
+            ]
+          },
+          "enrich": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enrich",
+            "description": "ML enrichments to apply",
+            "examples": [
+              [
+                "sentiment",
+                "intent",
+                "keywords",
+                "topics"
+              ]
+            ]
+          },
+          "categories": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Categories",
+            "description": "Custom categories for topic classification",
+            "examples": [
+              {
+                "topic": [
+                  "product",
+                  "education",
+                  "entertainment"
+                ]
+              }
+            ]
+          },
+          "llm_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Provider",
+            "description": "LLM provider for enrichment",
+            "examples": [
+              "gemini-2.0-flash"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "keywords"
+        ],
+        "title": "YouTubeSearchRequest",
+        "description": "Request body for searching YouTube videos by keywords."
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "tiktok",
+      "description": "Fetch posts, comments, and hashtag data from TikTok profiles"
+    },
+    {
+      "name": "instagram",
+      "description": "Fetch posts, comments, and hashtag data from Instagram"
+    },
+    {
+      "name": "youtube",
+      "description": "Search videos, fetch comments, and browse channel content on YouTube"
+    },
+    {
+      "name": "reddit",
+      "description": "Fetch posts and comments from Reddit subreddits"
+    },
+    {
+      "name": "ml",
+      "description": "Standalone ML analysis for text enrichment (sentiment, topics, intent, keywords)"
+    }
+  ]
+}

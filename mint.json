@@ -1,0 +1,50 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "Clay Integration API",
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#0066FF",
+    "light": "#4D9CFF",
+    "dark": "#0052CC"
+  },
+  "topbarLinks": [],
+  "anchors": [],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "getting-started",
+        "authentication",
+        "credits"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "ml-enrichment",
+        "pagination",
+        "errors"
+      ]
+    },
+    {
+      "group": "Platform Guides",
+      "pages": [
+        "platforms/tiktok",
+        "platforms/instagram",
+        "platforms/youtube",
+        "platforms/reddit"
+      ]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api-reference/introduction"
+      ]
+    }
+  ],
+  "openapi": "openapi.json",
+  "api": {
+    "baseUrl": "https://api.yourservice.com"
+  },
+  "footerSocials": {}
+}

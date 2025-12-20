@@ -1,0 +1,224 @@
+---
+title: 'ML Enrichment'
+description: 'Enhance your data with AI-powered analysis'
+---
+
+Enhance your social media data with AI-powered analysis. ML enrichment can be applied to any content-fetching endpoint or used directly via the `/ml/analyze` endpoint.
+
+## Available Enrichment Types
+
+### Sentiment Analysis
+
+Classify text as positive, negative, or neutral.
+
+```json
+{
+  "enrich": ["sentiment"]
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "sentiment": "positive",
+    "sentiment_score": 0.92
+  }
+}
+```
+
+### Topic Extraction
+
+Identify main topics discussed in the text.
+
+```json
+{
+  "enrich": ["topics"]
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "topics": ["technology", "innovation", "startups"]
+  }
+}
+```
+
+### Custom Topic Categories
+
+Define your own topic categories for classification:
+
+```json
+{
+  "enrich": ["topics"],
+  "categories": {
+    "topic": ["product", "service", "pricing", "support", "feature_request"]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "topics": ["product", "feature_request"]
+  }
+}
+```
+
+### Intent Detection
+
+Identify the user's intent behind the text.
+
+```json
+{
+  "enrich": ["intent"]
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "intent": "purchase_intent"
+  }
+}
+```
+
+Common intents include:
+- `purchase_intent` - User wants to buy something
+- `complaint` - User is expressing dissatisfaction
+- `question` - User is asking for information
+- `praise` - User is giving positive feedback
+- `suggestion` - User is making a recommendation
+
+### Keyword Extraction
+
+Extract important keywords and phrases.
+
+```json
+{
+  "enrich": ["keywords"]
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "keywords": ["machine learning", "AI", "automation", "efficiency"]
+  }
+}
+```
+
+## Combining Enrichments
+
+Request multiple enrichment types in a single call:
+
+```json
+{
+  "username": "charlidamelio",
+  "limit": 10,
+  "enrich": ["sentiment", "topics", "intent", "keywords"]
+}
+```
+
+**Response:**
+```json
+{
+  "enrichment": {
+    "sentiment": "positive",
+    "sentiment_score": 0.85,
+    "topics": ["dance", "entertainment"],
+    "intent": "engagement",
+    "keywords": ["dance", "tutorial", "fyp", "trending"]
+  }
+}
+```
+
+## LLM Provider Selection
+
+Choose which AI model to use for enrichment:
+
+```json
+{
+  "username": "charlidamelio",
+  "limit": 10,
+  "enrich": ["sentiment", "topics"],
+  "llm_provider": "gemini-2.0-flash"
+}
+```
+
+Available providers:
+- `gemini-2.0-flash` (default) - Fast, cost-effective
+- `gemini-1.5-pro` - More accurate, higher cost
+
+## Direct ML Analysis
+
+Use the `/ml/analyze` endpoint for standalone text analysis:
+
+```bash
+curl -X POST "https://api.yourservice.com/ml/analyze" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts": [
+      "I love this product! Best purchase ever!",
+      "This is terrible. Want a refund.",
+      "How do I contact support?"
+    ],
+    "analyses": ["sentiment", "intent"]
+  }'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "text": "I love this product! Best purchase ever!",
+        "sentiment": "positive",
+        "sentiment_score": 0.95,
+        "intent": "praise"
+      },
+      {
+        "text": "This is terrible. Want a refund.",
+        "sentiment": "negative",
+        "sentiment_score": 0.12,
+        "intent": "complaint"
+      },
+      {
+        "text": "How do I contact support?",
+        "sentiment": "neutral",
+        "sentiment_score": 0.48,
+        "intent": "question"
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 6,
+    "enrichments": ["sentiment", "intent"]
+  }
+}
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Batch your texts" icon="layer-group">
+    The ML analyze endpoint supports up to 25 texts per request
+  </Card>
+  <Card title="Use custom categories" icon="tags">
+    For better topic classification in your domain
+  </Card>
+  <Card title="Cache results" icon="database">
+    ML analysis results are deterministic for the same input
+  </Card>
+  <Card title="Choose appropriate enrichments" icon="check">
+    Only request what you need to save credits
+  </Card>
+</CardGroup>
