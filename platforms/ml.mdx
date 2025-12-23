@@ -1,0 +1,219 @@
+---
+title: "ML Analyze"
+description: "Standalone ML analysis for any text content"
+---
+
+The ML Analyze endpoint lets you run AI-powered analysis on any text, independent of social media fetching.
+
+## Endpoint Overview
+
+| Endpoint | Description | Credits |
+|----------|-------------|---------|
+| `POST /ml/analyze` | Analyze text with ML models | 0.5-1 per text per analysis |
+
+---
+
+## Analyze Text
+
+Run sentiment, topic, intent, and keyword analysis on any text content.
+
+### Basic Request
+
+```bash
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/ml/analyze" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts": ["This product is amazing! Best purchase ever."],
+    "enrich": ["sentiment"]
+  }'
+```
+
+### All Analysis Types
+
+```bash
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/ml/analyze" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts": [
+      "This product is amazing! Best purchase ever.",
+      "Terrible customer service, waited 2 hours on hold.",
+      "How do I return this item?"
+    ],
+    "enrich": ["sentiment", "topics", "intent", "keywords"],
+    "categories": {
+      "topic": ["product", "service", "shipping", "returns", "pricing"]
+    }
+  }'
+```
+
+### Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `texts` | array | Yes | - | List of texts to analyze (1-100) |
+| `enrich` | array | Yes | - | Analysis types to run |
+| `categories` | object | No | - | Custom topic categories |
+| `llm_provider` | string | No | gemini-2.0-flash | LLM provider for analysis |
+
+### Available Enrichments
+
+| Type | Description | Cost |
+|------|-------------|------|
+| `sentiment` | Positive, negative, or neutral | 0.5 credits/text |
+| `topics` | Extract main topics | 1 credit/text |
+| `intent` | Identify user intent | 1 credit/text |
+| `keywords` | Extract key phrases | 0.5 credits/text |
+
+### Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "text": "This product is amazing! Best purchase ever.",
+        "enrichment": {
+          "sentiment": "positive",
+          "sentiment_score": 0.95,
+          "topics": ["product"],
+          "intent": "praise",
+          "keywords": ["product", "amazing", "best", "purchase"]
+        }
+      },
+      {
+        "text": "Terrible customer service, waited 2 hours on hold.",
+        "enrichment": {
+          "sentiment": "negative",
+          "sentiment_score": 0.12,
+          "topics": ["service"],
+          "intent": "complaint",
+          "keywords": ["customer service", "waited", "hours", "hold"]
+        }
+      },
+      {
+        "text": "How do I return this item?",
+        "enrichment": {
+          "sentiment": "neutral",
+          "sentiment_score": 0.50,
+          "topics": ["returns"],
+          "intent": "question",
+          "keywords": ["return", "item"]
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "credits_used": 9,
+    "processing_time": 1.234,
+    "enrichments": ["sentiment", "topics", "intent", "keywords"]
+  }
+}
+```
+
+---
+
+## Custom Categories
+
+Define your own topic categories for more relevant classification:
+
+```bash
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/ml/analyze" \
+  -H "X-API-Key: your-api-key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "texts": ["The new iPhone camera is incredible for low-light photos"],
+    "enrich": ["topics"],
+    "categories": {
+      "topic": ["camera", "battery", "display", "performance", "design", "price"]
+    }
+  }'
+```
+
+---
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Customer Feedback" icon="comments">
+    Analyze support tickets, reviews, and survey responses
+  </Card>
+  <Card title="Content Moderation" icon="shield">
+    Detect sentiment and intent in user-generated content
+  </Card>
+  <Card title="Market Research" icon="chart-line">
+    Extract topics and sentiment from competitor mentions
+  </Card>
+  <Card title="Social Listening" icon="ear-listen">
+    Process imported data from any source
+  </Card>
+</CardGroup>
+
+---
+
+## Python Examples
+
+### Batch Analysis
+
+```python
+import requests
+
+def analyze_texts(texts, analyses=["sentiment", "topics"]):
+    response = requests.post(
+        "https://data-api.deepdiveplatform.com/api/v1/ml/analyze",
+        headers={"X-API-Key": "your-api-key"},
+        json={
+            "texts": texts,
+            "enrich": analyses
+        }
+    )
+    return response.json()
+
+# Analyze customer feedback
+feedback = [
+    "Love this product!",
+    "Shipping took forever",
+    "Great value for money",
+    "How do I get a refund?"
+]
+
+results = analyze_texts(feedback, ["sentiment", "intent"])
+
+for result in results["data"]["results"]:
+    print(f"{result['enrichment']['sentiment']}: {result['text'][:50]}...")
+```
+
+### Sentiment Distribution
+
+```python
+from collections import Counter
+
+def get_sentiment_distribution(texts):
+    results = analyze_texts(texts, ["sentiment"])
+
+    sentiments = Counter(
+        r["enrichment"]["sentiment"]
+        for r in results["data"]["results"]
+    )
+
+    total = len(texts)
+    return {
+        "positive": sentiments["positive"] / total * 100,
+        "negative": sentiments["negative"] / total * 100,
+        "neutral": sentiments["neutral"] / total * 100
+    }
+```
+
+---
+
+## Credit Calculation
+
+Credits are calculated per text, per analysis type:
+
+| Texts | Analyses | Calculation | Total |
+|-------|----------|-------------|-------|
+| 10 | sentiment | 10 × 0.5 | 5 credits |
+| 10 | sentiment, topics | 10 × (0.5 + 1) | 15 credits |
+| 10 | all 4 types | 10 × (0.5 + 1 + 1 + 0.5) | 30 credits |

@@ -24,7 +24,7 @@ Fetch posts from a TikTok user's profile.
 ### Basic Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -36,7 +36,7 @@ curl -X POST "https://api.yourservice.com/tiktok/posts" \
 ### With Pagination
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -49,7 +49,7 @@ curl -X POST "https://api.yourservice.com/tiktok/posts" \
 ### With ML Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -121,7 +121,7 @@ Fetch comments from one or more TikTok posts.
 ### Single Post
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -133,7 +133,7 @@ curl -X POST "https://api.yourservice.com/tiktok/comments" \
 ### Multiple Posts
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -191,7 +191,7 @@ Fetch posts from multiple TikTok users in one request.
 ### Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/bulk/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/bulk/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -242,7 +242,7 @@ Search TikTok posts by hashtags.
 ### Single Hashtag
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/hashtag/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/hashtag/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -255,7 +255,7 @@ curl -X POST "https://api.yourservice.com/tiktok/hashtag/posts" \
 ### Multiple Hashtags with Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/hashtag/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/hashtag/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -338,7 +338,7 @@ def fetch_all_tiktok_posts(username, max_posts=500):
             payload["cursor"] = cursor
 
         response = requests.post(
-            "https://api.yourservice.com/tiktok/posts",
+            "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts",
             headers={"X-API-Key": "your-api-key"},
             json=payload
         )
@@ -364,7 +364,7 @@ import requests
 
 def analyze_trending_hashtags(hashtags, days=7):
     response = requests.post(
-        "https://api.yourservice.com/tiktok/hashtag/posts",
+        "https://data-api.deepdiveplatform.com/api/v1/tiktok/hashtag/posts",
         headers={"X-API-Key": "your-api-key"},
         json={
             "hashtags": hashtags,

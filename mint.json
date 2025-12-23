@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Clay Integration API",
+  "name": "DeepDive Platform",
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#0066FF",
@@ -10,6 +10,12 @@
   "topbarLinks": [],
   "anchors": [],
   "navigation": [
+    {
+      "group": "Introduction",
+      "pages": [
+        "introduction"
+      ]
+    },
     {
       "group": "Getting Started",
       "pages": [
@@ -23,6 +29,7 @@
       "pages": [
         "ml-enrichment",
         "pagination",
+        "rate-limiting",
         "errors"
       ]
     },
@@ -32,19 +39,14 @@
         "platforms/tiktok",
         "platforms/instagram",
         "platforms/youtube",
-        "platforms/reddit"
-      ]
-    },
-    {
-      "group": "API Reference",
-      "pages": [
-        "api-reference/introduction"
+        "platforms/reddit",
+        "platforms/ml"
       ]
     }
   ],
   "openapi": "openapi.json",
   "api": {
-    "baseUrl": "https://api.yourservice.com"
+    "baseUrl": "https://data-api.deepdiveplatform.com/api/v1"
   },
   "footerSocials": {}
 }

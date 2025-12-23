@@ -3,7 +3,7 @@ title: 'Getting Started'
 description: 'Make your first API call in minutes'
 ---
 
-Welcome to the Clay Integration API! This guide will help you make your first API call in minutes.
+Welcome to the DeepDive API! This guide will help you make your first API call in minutes.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ Welcome to the Clay Integration API! This guide will help you make your first AP
 All API requests should be made to:
 
 ```
-https://api.yourservice.com
+https://data-api.deepdiveplatform.com/api/v1
 ```
 
 ## Authentication
@@ -23,7 +23,7 @@ https://api.yourservice.com
 All requests require an API key passed in the `X-API-Key` header:
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"username": "charlidamelio", "limit": 10}'
@@ -36,7 +36,7 @@ Let's fetch posts from a TikTok user:
 ### Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -80,7 +80,7 @@ curl -X POST "https://api.yourservice.com/tiktok/posts" \
 Enhance your data with sentiment analysis, topic extraction, and more:
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{

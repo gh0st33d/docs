@@ -22,7 +22,7 @@ Fetch posts from a Reddit subreddit.
 ### Basic Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -34,7 +34,7 @@ curl -X POST "https://api.yourservice.com/reddit/posts" \
 ### With Sorting Options
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -49,31 +49,31 @@ curl -X POST "https://api.yourservice.com/reddit/posts" \
 
 ```bash
 # Hot posts
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"name": "python", "sort": "hot", "limit": 20}'
 
 # New posts
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"name": "python", "sort": "new", "limit": 20}'
 
 # Top posts (with time period)
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"name": "python", "sort": "top", "period": "month", "limit": 20}'
 
 # Rising posts
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"name": "python", "sort": "rising", "limit": 20}'
 
 # Controversial posts
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{"name": "python", "sort": "controversial", "period": "week", "limit": 20}'
@@ -82,7 +82,7 @@ curl -X POST "https://api.yourservice.com/reddit/posts" \
 ### With Pagination
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -96,7 +96,7 @@ curl -X POST "https://api.yourservice.com/reddit/posts" \
 ### With ML Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -169,7 +169,7 @@ Fetch comments from a Reddit post. Supports both permalink paths and full URLs.
 ### Using Permalink Path
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -181,7 +181,7 @@ curl -X POST "https://api.yourservice.com/reddit/comments" \
 ### Using Full URL
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -193,7 +193,7 @@ curl -X POST "https://api.yourservice.com/reddit/comments" \
 ### With ML Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/reddit/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/reddit/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -280,7 +280,7 @@ def monitor_subreddit(subreddit, hours=24):
             payload["cursor"] = cursor
 
         response = requests.post(
-            "https://api.yourservice.com/reddit/posts",
+            "https://data-api.deepdiveplatform.com/api/v1/reddit/posts",
             headers={"X-API-Key": "your-api-key"},
             json=payload
         )
@@ -314,7 +314,7 @@ from collections import Counter
 
 def analyze_discussion(permalink, limit=200):
     response = requests.post(
-        "https://api.yourservice.com/reddit/comments",
+        "https://data-api.deepdiveplatform.com/api/v1/reddit/comments",
         headers={"X-API-Key": "your-api-key"},
         json={
             "permalink": permalink,
@@ -364,7 +364,7 @@ def compare_subreddits(subreddits, posts_per_sub=50):
 
     for subreddit in subreddits:
         response = requests.post(
-            "https://api.yourservice.com/reddit/posts",
+            "https://data-api.deepdiveplatform.com/api/v1/reddit/posts",
             headers={"X-API-Key": "your-api-key"},
             json={
                 "name": subreddit,
@@ -411,7 +411,7 @@ from datetime import datetime
 
 def track_trending_topics(subreddit, days=7):
     response = requests.post(
-        "https://api.yourservice.com/reddit/posts",
+        "https://data-api.deepdiveplatform.com/api/v1/reddit/posts",
         headers={"X-API-Key": "your-api-key"},
         json={
             "name": subreddit,

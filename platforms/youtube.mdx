@@ -25,7 +25,7 @@ Search YouTube for videos matching keywords.
 ### Basic Search
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/search" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/search" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -37,7 +37,7 @@ curl -X POST "https://api.yourservice.com/youtube/search" \
 ### Multiple Keywords with Filters
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/search" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/search" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -51,7 +51,7 @@ curl -X POST "https://api.yourservice.com/youtube/search" \
 ### With Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/search" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/search" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -126,7 +126,7 @@ Search YouTube videos by hashtags.
 ### Basic Hashtag Search
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/hashtag/search" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/hashtag/search" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -138,7 +138,7 @@ curl -X POST "https://api.yourservice.com/youtube/hashtag/search" \
 ### Shorts Only
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/hashtag/search" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/hashtag/search" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -167,7 +167,7 @@ Fetch comments from YouTube videos. Supports multiple URL formats.
 ### Using Full URL
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -179,7 +179,7 @@ curl -X POST "https://api.yourservice.com/youtube/comments" \
 ### Using youtu.be Short URL
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -191,7 +191,7 @@ curl -X POST "https://api.yourservice.com/youtube/comments" \
 ### Using Video ID Only
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -203,7 +203,7 @@ curl -X POST "https://api.yourservice.com/youtube/comments" \
 ### Mixed Formats with Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -263,7 +263,7 @@ Fetch videos from YouTube channels using browse IDs.
 ### Single Channel
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/channel/videos" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/channel/videos" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -275,7 +275,7 @@ curl -X POST "https://api.yourservice.com/youtube/channel/videos" \
 ### Multiple Channels with Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/channel/videos" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/channel/videos" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -302,7 +302,7 @@ Fetch YouTube Shorts from channels.
 ### Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/youtube/channel/shorts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/youtube/channel/shorts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -330,7 +330,7 @@ from collections import Counter
 
 def search_and_analyze(keyword, max_videos=100):
     response = requests.post(
-        "https://api.yourservice.com/youtube/search",
+        "https://data-api.deepdiveplatform.com/api/v1/youtube/search",
         headers={"X-API-Key": "your-api-key"},
         json={
             "keywords": [keyword],
@@ -375,7 +375,7 @@ def monitor_channel(browse_id, include_shorts=True):
 
     # Fetch regular videos
     response = requests.post(
-        "https://api.yourservice.com/youtube/channel/videos",
+        "https://data-api.deepdiveplatform.com/api/v1/youtube/channel/videos",
         headers={"X-API-Key": "your-api-key"},
         json={
             "browse_ids": [browse_id],
@@ -388,7 +388,7 @@ def monitor_channel(browse_id, include_shorts=True):
     # Optionally fetch Shorts
     if include_shorts:
         response = requests.post(
-            "https://api.yourservice.com/youtube/channel/shorts",
+            "https://data-api.deepdiveplatform.com/api/v1/youtube/channel/shorts",
             headers={"X-API-Key": "your-api-key"},
             json={
                 "browse_ids": [browse_id],
@@ -407,7 +407,7 @@ import requests
 
 def analyze_video_comments(video_url, limit=200):
     response = requests.post(
-        "https://api.yourservice.com/youtube/comments",
+        "https://data-api.deepdiveplatform.com/api/v1/youtube/comments",
         headers={"X-API-Key": "your-api-key"},
         json={
             "post_urls": [video_url],

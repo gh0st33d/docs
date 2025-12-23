@@ -1,0 +1,67 @@
+{
+  "info": {
+    "name": "DeepDive API Collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Posts",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{API_KEY}}" }
+        ],
+        "url": { "raw": "{{BASE_URL}}/api/v1/tiktok/posts", "host": ["{{BASE_URL}}"], "path": ["api","v1","tiktok","posts"] },
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"tiktok_user\",\n  \"limit\": 10\n}" }
+      }
+    },
+    {
+      "name": "Get Comments",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{API_KEY}}" }
+        ],
+        "url": { "raw": "{{BASE_URL}}/api/v1/tiktok/comments", "host": ["{{BASE_URL}}"], "path": ["api","v1","tiktok","comments"] },
+        "body": { "mode": "raw", "raw": "{\n  \"post_urls\": [\"https://www.tiktok.com/@user/video/123\"],\n  \"limit_per_post\": 50\n}" }
+      }
+    },
+    {
+      "name": "Bulk Posts",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{API_KEY}}" }
+        ],
+        "url": { "raw": "{{BASE_URL}}/api/v1/tiktok/bulk/posts", "host": ["{{BASE_URL}}"], "path": ["api","v1","tiktok","bulk","posts"] },
+        "body": { "mode": "raw", "raw": "{\n  \"usernames\": [\"user1\", \"user2\"],\n  \"limit_per_user\": 10\n}" }
+      }
+    },
+    {
+      "name": "ML Analyze",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{API_KEY}}" }
+        ],
+        "url": { "raw": "{{BASE_URL}}/api/v1/ml/analyze", "host": ["{{BASE_URL}}"], "path": ["api","v1","ml","analyze"] },
+        "body": { "mode": "raw", "raw": "{\n  \"texts\": [\"hello world\"],\n  \"analyses\": [\"sentiment\"]\n}" }
+      }
+    },
+    {
+      "name": "Hashtag Posts",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-API-Key", "value": "{{API_KEY}}" }
+        ],
+        "url": { "raw": "{{BASE_URL}}/api/v1/tiktok/hashtag/posts", "host": ["{{BASE_URL}}"], "path": ["api","v1","tiktok","hashtag","posts"] },
+        "body": { "mode": "raw", "raw": "{\n  \"hashtags\": [\"fitness\", \"workout\", \"gym\"],\n  \"days\": 7,\n  \"max_posts_per_hashtag\": 50,\n  \"enrich\": [\"sentiment\", \"topics\"]\n}" }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "BASE_URL", "value": "https://data-api.deepdiveplatform.com" },
+    { "key": "API_KEY", "value": "your_api_key_here" }
+  ]
+}

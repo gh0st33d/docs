@@ -1,0 +1,147 @@
+---
+title: 'Rate Limiting'
+description: 'Understand API rate limits and how to handle them'
+---
+
+The API enforces rate limits to ensure fair usage and system stability.
+
+## Default Limits
+
+| Limit Type | Value |
+|------------|-------|
+| Requests per minute | 100 |
+| Concurrent requests | 10 |
+
+Rate limits are applied per API key.
+
+## Rate Limit Headers
+
+Every response includes headers showing your current rate limit status:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1705315860
+```
+
+| Header | Description |
+|--------|-------------|
+| `X-RateLimit-Limit` | Maximum requests per minute |
+| `X-RateLimit-Remaining` | Requests remaining in current window |
+| `X-RateLimit-Reset` | Unix timestamp when the limit resets |
+
+## Rate Limit Exceeded
+
+When you exceed the rate limit, the API returns:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "RATE_LIMITED",
+    "message": "Rate limit exceeded. Please wait before retrying."
+  }
+}
+```
+
+HTTP Status: `429 Too Many Requests`
+
+## Handling Rate Limits
+
+<CodeGroup>
+
+```python Python
+import requests
+from time import sleep
+
+def make_request_with_backoff(url, payload, max_retries=3):
+    headers = {
+        "X-API-Key": "your-api-key",
+        "Content-Type": "application/json"
+    }
+
+    for attempt in range(max_retries):
+        response = requests.post(url, headers=headers, json=payload)
+
+        # Check rate limit headers
+        remaining = int(response.headers.get("X-RateLimit-Remaining", 100))
+
+        if response.status_code == 429:
+            reset_time = int(response.headers.get("X-RateLimit-Reset", 0))
+            wait_time = max(reset_time - time.time(), 1)
+            print(f"Rate limited. Waiting {wait_time}s...")
+            sleep(wait_time)
+            continue
+
+        # Proactively slow down if running low
+        if remaining < 10:
+            sleep(0.5)
+
+        return response.json()
+
+    raise Exception("Max retries exceeded")
+```
+
+```javascript JavaScript
+async function makeRequestWithBackoff(url, payload, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "X-API-Key": "your-api-key",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const remaining = parseInt(response.headers.get("X-RateLimit-Remaining") || "100");
+
+    if (response.status === 429) {
+      const resetTime = parseInt(response.headers.get("X-RateLimit-Reset") || "0");
+      const waitTime = Math.max(resetTime - Date.now() / 1000, 1) * 1000;
+      console.log(`Rate limited. Waiting ${waitTime/1000}s...`);
+      await new Promise(r => setTimeout(r, waitTime));
+      continue;
+    }
+
+    // Proactively slow down if running low
+    if (remaining < 10) {
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    return await response.json();
+  }
+
+  throw new Error("Max retries exceeded");
+}
+```
+
+</CodeGroup>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Monitor headers" icon="chart-line">
+    Track X-RateLimit-Remaining to avoid hitting limits
+  </Card>
+  <Card title="Implement backoff" icon="clock">
+    Use exponential backoff when rate limited
+  </Card>
+  <Card title="Batch requests" icon="layer-group">
+    Use bulk endpoints to reduce request count
+  </Card>
+  <Card title="Cache responses" icon="database">
+    Store results to avoid duplicate requests
+  </Card>
+</CardGroup>
+
+## Tips for Staying Under Limits
+
+1. **Use bulk endpoints** - `/tiktok/bulk/posts` fetches from multiple users in one request
+2. **Increase limits per request** - Fetch 100 posts instead of 10 separate requests of 10
+3. **Cache responses** - Store data locally to avoid refetching
+4. **Spread requests** - Don't burst all requests at once
+
+## Need Higher Limits?
+
+Contact your administrator to request increased rate limits for your API key.

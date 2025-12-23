@@ -27,7 +27,7 @@ Most list endpoints support cursor-based pagination for fetching large datasets 
 ### Initial Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -55,7 +55,7 @@ curl -X POST "https://api.yourservice.com/tiktok/posts" \
 ### Next Page Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/tiktok/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -85,7 +85,7 @@ def fetch_all_posts(username, max_posts=100):
             payload["cursor"] = cursor
 
         response = requests.post(
-            "https://api.yourservice.com/tiktok/posts",
+            "https://data-api.deepdiveplatform.com/api/v1/tiktok/posts",
             headers={"X-API-Key": "your-api-key"},
             json=payload
         )
@@ -116,7 +116,7 @@ async function fetchAllPosts(username, maxPosts = 100) {
       payload.cursor = cursor;
     }
 
-    const response = await fetch("https://api.yourservice.com/tiktok/posts", {
+    const response = await fetch("https://data-api.deepdiveplatform.com/api/v1/tiktok/posts", {
       method: "POST",
       headers: {
         "X-API-Key": "your-api-key",

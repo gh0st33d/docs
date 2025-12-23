@@ -1,11 +1,11 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Clay Integration API",
-    "description": "\n## Overview\n\nThe Clay Integration API provides a unified interface to fetch and enrich social media data from multiple platforms including TikTok, Instagram, YouTube, and Reddit.\n\n## Key Features\n\n- **Multi-platform Support**: Access data from TikTok, Instagram, YouTube, and Reddit through a single API\n- **ML Enrichment**: Automatically analyze content with sentiment analysis, topic extraction, intent detection, and keyword extraction\n- **Credit-based Pricing**: Transparent credit consumption per request\n- **Pagination Support**: Efficiently handle large datasets with cursor-based pagination\n- **Bulk Operations**: Fetch data for multiple users or posts in a single request\n\n## Authentication\n\nAll API requests require an API key passed in the `X-API-Key` header:\n\n```\nX-API-Key: your_api_key_here\n```\n\n## Rate Limiting\n\n- Default: 100 requests per minute per API key\n- Rate limit headers are included in responses\n\n## Response Format\n\nAll endpoints return a consistent response structure:\n\n```json\n{\n  \"success\": true,\n  \"data\": { ... },\n  \"metadata\": {\n    \"credits_used\": 15,\n    \"processing_time\": 1.234,\n    \"cache_hit\": false,\n    \"failed_items\": [],\n    \"enrichments_applied\": [\"sentiment\"]\n  },\n  \"error\": null\n}\n```\n",
+    "title": "DeepDive API",
+    "description": "\n## Overview\n\nThe DeepDive API provides a unified interface to fetch and enrich social media data from multiple platforms including TikTok, Instagram, YouTube, and Reddit.\n\n## Key Features\n\n- **Multi-platform Support**: Access data from TikTok, Instagram, YouTube, and Reddit through a single API\n- **ML Enrichment**: Automatically analyze content with sentiment analysis, topic extraction, intent detection, and keyword extraction\n- **Credit-based Pricing**: Transparent credit consumption per request\n- **Pagination Support**: Efficiently handle large datasets with cursor-based pagination\n- **Bulk Operations**: Fetch data for multiple users or posts in a single request\n\n## Authentication\n\nAll API requests require an API key passed in the `X-API-Key` header:\n\n```\nX-API-Key: your_api_key_here\n```\n\n## Rate Limiting\n\n- Default: 100 requests per minute per API key\n- Rate limit headers are included in responses\n\n## Response Format\n\nAll endpoints return a consistent response structure:\n\n```json\n{\n  \"success\": true,\n  \"data\": { ... },\n  \"metadata\": {\n    \"credits_used\": 15,\n    \"processing_time\": 1.234,\n    \"cache_hit\": false,\n    \"failed_items\": [],\n    \"enrichments_applied\": [\"sentiment\"]\n  },\n  \"error\": null\n}\n```\n",
     "contact": {
-      "name": "Clay Integration Support",
-      "email": "support@example.com"
+      "name": "DeepDive Support",
+      "email": "drubo@markopolo.ai"
     },
     "license": {
       "name": "Proprietary"

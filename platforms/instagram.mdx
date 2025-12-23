@@ -23,7 +23,7 @@ Fetch posts from an Instagram user's profile.
 ### Basic Request
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -37,7 +37,7 @@ curl -X POST "https://api.yourservice.com/instagram/posts" \
 Instagram also accepts numeric user IDs:
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -49,7 +49,7 @@ curl -X POST "https://api.yourservice.com/instagram/posts" \
 ### With Pagination
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -62,7 +62,7 @@ curl -X POST "https://api.yourservice.com/instagram/posts" \
 ### With ML Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -130,7 +130,7 @@ Fetch comments from Instagram posts. Supports multiple URL formats.
 ### Using Full URL
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -142,7 +142,7 @@ curl -X POST "https://api.yourservice.com/instagram/comments" \
 ### Using Partial URL (without https://)
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -154,7 +154,7 @@ curl -X POST "https://api.yourservice.com/instagram/comments" \
 ### Using Shortcode Only
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -166,7 +166,7 @@ curl -X POST "https://api.yourservice.com/instagram/comments" \
 ### Mixed URL Formats
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/comments" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/comments" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -225,7 +225,7 @@ Search Instagram posts by hashtags.
 ### Single Hashtag
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/hashtag/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/hashtag/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -238,7 +238,7 @@ curl -X POST "https://api.yourservice.com/instagram/hashtag/posts" \
 ### Multiple Hashtags with Enrichment
 
 ```bash
-curl -X POST "https://api.yourservice.com/instagram/hashtag/posts" \
+curl -X POST "https://data-api.deepdiveplatform.com/api/v1/instagram/hashtag/posts" \
   -H "X-API-Key: your-api-key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -315,7 +315,7 @@ def fetch_instagram_posts(username, limit=10, enrich=None):
         payload["enrich"] = enrich
 
     response = requests.post(
-        "https://api.yourservice.com/instagram/posts",
+        "https://data-api.deepdiveplatform.com/api/v1/instagram/posts",
         headers={"X-API-Key": "your-api-key"},
         json=payload
     )
@@ -341,7 +341,7 @@ from collections import Counter
 
 def analyze_post_comments(post_url, limit=100):
     response = requests.post(
-        "https://api.yourservice.com/instagram/comments",
+        "https://data-api.deepdiveplatform.com/api/v1/instagram/comments",
         headers={"X-API-Key": "your-api-key"},
         json={
             "post_urls": [post_url],
@@ -373,7 +373,7 @@ import requests
 
 def monitor_hashtag_trends(hashtags, days=7):
     response = requests.post(
-        "https://api.yourservice.com/instagram/hashtag/posts",
+        "https://data-api.deepdiveplatform.com/api/v1/instagram/hashtag/posts",
         headers={"X-API-Key": "your-api-key"},
         json={
             "hashtags": hashtags,

@@ -1,0 +1,88 @@
+---
+title: 'Introduction to DeepDive Platform'
+description: 'AI-powered social intelligence for teams'
+---
+
+**DeepDive** is an AI-powered social intelligence platform that helps teams collect, analyze, and act on large-scale online conversation data. It processes unstructured data from social media, communities, and review platforms, turning it into structured insights through NLP, signal analysis, and automated workflows.
+
+DeepDive is designed to integrate seamlessly with external tools and data systems. Through APIs and integrations, teams can enhance their workflows with real-time social signals, including brand mentions, sentiment, intent, emerging topics, and risk indicators.
+
+## What DeepDive Provides
+
+DeepDive enables users to:
+
+- Monitor conversations across multiple platforms and sources
+- Analyze sentiment, topics, narratives, and intent at scale
+- Detect early signals, anomalies, and potential risks
+- Export structured intelligence into downstream tools for activation
+
+## Using DeepDive with Integrations
+
+DeepDive supports integrations that enable social intelligence to flow seamlessly into operational systems, including CRMs, enrichment tools, analytics platforms, and automation pipelines.
+
+In this documentation, you'll find:
+
+- How DeepDive data is structured and exposed
+- Step-by-step guides for integrating DeepDive with external tools and platforms
+- Examples for syncing signals, alerts, and enriched attributes into external workflows
+
+This documentation focuses on **how to connect, configure, and use DeepDive data programmatically**, rather than on product features or marketing use cases.
+
+## Supported Platforms
+
+| Platform | Endpoints |
+|----------|-----------|
+| **TikTok** | Posts, Comments, Bulk Posts, Hashtag Search |
+| **Instagram** | Posts, Comments, Hashtag Search |
+| **YouTube** | Search, Comments, Hashtag Search, Channel Videos, Channel Shorts |
+| **Reddit** | Subreddit Posts, Post Comments |
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Multi-Platform" icon="globe">
+    Access TikTok, Instagram, YouTube, and Reddit through a single API
+  </Card>
+  <Card title="ML Enrichment" icon="brain">
+    Analyze content with sentiment, topics, intent, and keyword extraction
+  </Card>
+  <Card title="Credit-Based Pricing" icon="coins">
+    Transparent per-request credit consumption
+  </Card>
+  <Card title="Pagination" icon="list">
+    Efficiently handle large datasets with cursor-based pagination
+  </Card>
+</CardGroup>
+
+## Response Format
+
+All endpoints return a consistent response structure:
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "metadata": {
+    "credits_used": 15,
+    "processing_time": 1.234,
+    "enrichments_applied": ["sentiment", "topics"]
+  }
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Getting Started" icon="rocket" href="/getting-started">
+    Make your first API call in minutes
+  </Card>
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn about API key management
+  </Card>
+  <Card title="ML Enrichment" icon="brain" href="/ml-enrichment">
+    Explore AI-powered content analysis
+  </Card>
+  <Card title="Platform Guides" icon="globe" href="/platforms/tiktok">
+    Detailed guides for each platform
+  </Card>
+</CardGroup>
