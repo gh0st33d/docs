@@ -18,6 +18,10 @@ The Facebook integration will provide access to public page posts, comments, and
 | `POST /facebook/page/posts` | Fetch posts from a Facebook page |
 | `POST /facebook/post/comments` | Get comments on a specific post |
 | `POST /facebook/page/info` | Get page information and metrics |
+| `POST /facebook/group/posts` | Fetch posts from a Facebook group |
+| `POST /facebook/group/comments` | Get comments on group posts |
+| `POST /facebook/feed/posts` | Fetch posts from a user's feed |
+| `POST /facebook/feed/comments` | Get comments on feed posts |
 
 ## Planned Features
 
@@ -25,8 +29,14 @@ The Facebook integration will provide access to public page posts, comments, and
   <Card title="Page Posts" icon="file-lines">
     Fetch posts from public Facebook pages
   </Card>
+  <Card title="Group Posts" icon="users">
+    Access posts and discussions from Facebook groups
+  </Card>
+  <Card title="Feed Posts" icon="rss">
+    Retrieve posts from user feeds
+  </Card>
   <Card title="Comments" icon="comments">
-    Access comments and replies on posts
+    Access comments and replies on all post types
   </Card>
   <Card title="Engagement Metrics" icon="thumbs-up">
     Track reactions, comments, and shares
