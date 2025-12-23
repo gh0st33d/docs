@@ -1,6 +1,10 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "DeepDive Platform",
+  "name": "DeepDive AI",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg"
+  },
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#0066FF",
@@ -41,6 +45,14 @@
         "platforms/youtube",
         "platforms/reddit",
         "platforms/ml"
+      ]
+    },
+    {
+      "group": "Coming Soon",
+      "pages": [
+        "platforms/linkedin",
+        "platforms/twitter",
+        "platforms/facebook"
       ]
     }
   ],

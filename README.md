@@ -1,4 +1,4 @@
-# DeepDive Platform Documentation
+# DeepDive AI Documentation
 
 This directory contains the API documentation powered by [Mintlify](https://mintlify.com).
 
